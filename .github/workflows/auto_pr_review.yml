@@ -29,7 +29,7 @@ jobs:
       - name: Clone a private repository
         run: |
           git clone https://x-access-token:${{ secrets.BOT_GH_TOKEN }}@github.com/SSS-Core-AI/poc-pull-request-bot.git
-          cd PR_AUTO
+          cd poc-pull-request-bot
 
       - name: Create .env file with multiple variables
         run: |
