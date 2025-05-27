@@ -28,7 +28,7 @@ jobs:
 
       - name: Clone a private repository
         run: |
-          git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/hsinpa/PR_AUTO.git
+          git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/SSS-Core-AI/poc-pull-request-bot.git
           cd PR_AUTO
 
       - name: Create .env file with multiple variables
