@@ -1,6 +1,6 @@
 import httpx
 
-async def fetch_github_file(content_url: str, file_path: str, sha: str, token: str) -> str:
+def fetch_github_file(content_url: str, file_path: str, sha: str, token: str) -> str:
     full_url = content_url.replace('{+path}', file_path)
     full_url += f'?ref={sha}'
 
