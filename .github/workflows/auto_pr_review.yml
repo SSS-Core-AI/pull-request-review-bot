@@ -39,7 +39,7 @@ jobs:
           echo "LANGFUSE_HOST=${{secrets.LANGFUSE_HOST}}" >> .env
           echo "BOT_GH_PAT=${{secrets.BOT_GH_PAT}}" >> .env
           echo "BOT_GH_TOKEN=${{secrets.BOT_GH_TOKEN}}" >> .env
-          echo "SHA=${{github.event.pull_request.sha}}" >> .env
+          echo "SHA=${{github.event.pull_request.base.sha}}" >> .env
 
       - name: Install requirements.txt
         run: pip install -r requirements.txt
