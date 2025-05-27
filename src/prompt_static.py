@@ -14,5 +14,7 @@ PLAN_HUMAN_PROMPT = """\
 {pr_patch}
 '''
 
+{custom_instruction}
+
 Output
 """

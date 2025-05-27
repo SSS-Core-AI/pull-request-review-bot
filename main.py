@@ -34,13 +34,12 @@ def main():
             c_instruction = fetch_github_file(content_url=content_url, file_path='pull_request_bot_instruction.txt',
                               sha=sha, token=token)
 
-            print(f'instruction: {c_instruction}')
-
             agent = PRBotAgent(ClassicILLMLoader())
             agent_graph = agent.create_graph()
 
             feedback_content = agent_graph.invoke({
-                'pr_patch': filtered_p
+                'pr_patch': filtered_p,
+                'custom_instruction': c_instruction,
             },
             {'run_name': 'Lesson Summary v2', "callbacks": get_langfuse_callback()})
 
