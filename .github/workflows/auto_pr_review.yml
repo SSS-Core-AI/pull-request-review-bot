@@ -28,7 +28,7 @@ jobs:
 
       - name: Clone a private repository
         run: |
-          git clone https://x-access-token:${{ secrets.BOT_GH_TOKEN }}@github.com/SSS-Core-AI/poc-pull-request-bot.git
+          git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/SSS-Core-AI/poc-pull-request-bot.git
           cd poc-pull-request-bot
 
       - name: Create .env file with multiple variables
@@ -38,7 +38,7 @@ jobs:
           echo "LANGFUSE_PUBLIC_KEY=${{secrets.LANGFUSE_PUBLIC_KEY}}" >> .env
           echo "LANGFUSE_HOST=${{secrets.LANGFUSE_HOST}}" >> .env
           echo "BOT_GH_PAT=${{secrets.BOT_GH_PAT}}" >> .env
-          echo "BOT_GH_TOKEN=${{secrets.BOT_GH_TOKEN}}" >> .env
+          echo "BOT_GH_TOKEN=${{secrets.GITHUB_TOKEN}}" >> .env
 
       - name: Install requirements.txt
         run: pip install -r requirements.txt
@@ -46,7 +46,7 @@ jobs:
       - name: Download PR Patch
         run: |
             curl -L \
-            -H "Authorization: Bearer ${{secrets.BOT_GH_TOKEN}}" \
+            -H "Authorization: Bearer ${{secrets.GITHUB_TOKEN}}" \
             -H "Accept: application/vnd.github.patch" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             "${{ github.event.pull_request.url }}" -o pr.patch
