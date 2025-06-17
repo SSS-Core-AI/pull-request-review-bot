@@ -2,8 +2,7 @@ from langchain_core.language_models import BaseChatModel
 from langchain_core.output_parsers import BaseOutputParser
 from langchain.schema.messages import SystemMessage
 from langchain.prompts import ChatPromptTemplate, HumanMessagePromptTemplate
-from langfuse.callback import CallbackHandler
-
+from langfuse.langchain import CallbackHandler
 
 class ModulePromptFactory:
     """A factory only accept and run one prompt, nothing more"""

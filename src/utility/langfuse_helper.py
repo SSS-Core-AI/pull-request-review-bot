@@ -1,6 +1,6 @@
 import os
+from langfuse.langchain import CallbackHandler
 
-from langfuse.callback import CallbackHandler
 from typing import List
 
 def get_langfuse_callback(session_id: str = None, tags: List[str] = []) -> list[CallbackHandler]:
