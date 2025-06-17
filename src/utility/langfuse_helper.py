@@ -1,5 +1,6 @@
 import os
-from langfuse.langchain import CallbackHandler
+from langfuse.callback import CallbackHandler
+
 
 from typing import List
 

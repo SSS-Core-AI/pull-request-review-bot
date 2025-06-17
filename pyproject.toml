@@ -7,7 +7,7 @@ requires-python = ">=3.12"
 dependencies = [
     "langchain==0.3.25",
     "langchain-openai==0.3.23",
-    "langfuse==3.0.2",
+    "langfuse==2.59.1",
     "langgraph==0.4.8",
     "python-dotenv==1.1.0",
 ]
