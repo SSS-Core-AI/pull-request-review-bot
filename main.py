@@ -24,6 +24,8 @@ def main():
     comment_url = sys.argv[2]
     content_url = sys.argv[3]
 
+    print('Hello world')
+
     try:
         with open(patch_file, 'r') as file:
             patch_lines = file.readlines()
