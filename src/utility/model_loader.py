@@ -6,7 +6,7 @@ from langchain_openai import ChatOpenAI
 
 GPT4o_mini = 'gpt-4o-mini'
 GPT4o = 'gpt-4o'
-
+GPT41 = 'gpt-4.1-2025-04-14'
 
 class ILLMLoader(ABC):
     @abstractmethod

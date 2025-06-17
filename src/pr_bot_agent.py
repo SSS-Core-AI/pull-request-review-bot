@@ -4,7 +4,7 @@ from langgraph.graph import StateGraph
 
 from src.pr_bot_state import ChatbotAgentState
 from src.prompt_static import PLAN_SYSTEM_PROMPT, PLAN_HUMAN_PROMPT
-from src.utility.model_loader import ILLMLoader, GPT4o_mini
+from src.utility.model_loader import ILLMLoader, GPT41
 from src.utility.module_prompt_factory import ModulePromptFactory
 
 
@@ -12,13 +12,25 @@ class PRBotAgent:
     def __init__(self, llm_loader: ILLMLoader, ):
         self._llm_loader = llm_loader
 
+    def _get_custom_instruction(self, c_instruction: str) -> str:
+        if c_instruction == '':
+            return ''
+
+        return (f"""[Custom instruction]
+Strictly follow the instruction
+```
+{c_instruction}
+```
+""")
+
     def _generate_pr_review_plan(self, state: ChatbotAgentState):
         simple_chain = ModulePromptFactory(
             StrOutputParser(),
-            model=self._llm_loader.get_llm_model(GPT4o_mini),
+            model=self._llm_loader.get_llm_model(GPT41),
             name='Learning Objectives',
             partial_variables={
                 'pr_patch': state['pr_patch'],
+                'custom_instruction': self._get_custom_instruction(state['custom_instruction'])
             },
             system_prompt_text=PLAN_SYSTEM_PROMPT,
             human_prompt_text=PLAN_HUMAN_PROMPT,

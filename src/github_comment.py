@@ -3,9 +3,9 @@ import requests
 
 
 def send_github_comment(comment_url: str, comment_content: str):
-    pat = os.getenv('BOT_GH_PAT')
+    token = os.getenv('BOT_GH_TOKEN')
 
-    if pat is None:
+    if token is None:
         return
 
     payload = {
@@ -15,7 +15,7 @@ def send_github_comment(comment_url: str, comment_content: str):
     # Set up the headers with the authentication token
     headers = {
         "Accept": "application/vnd.github+json",
-        "Authorization": f"Bearer {pat}",
+        "Authorization": f"Bearer {token}",
         "X-GitHub-Api-Version": "2022-11-28"
         }
 
