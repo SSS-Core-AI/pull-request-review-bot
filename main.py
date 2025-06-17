@@ -3,8 +3,8 @@ import sys
 from dotenv import load_dotenv
 
 from filter_pr_helper import filter_patch
-from src.github_comment import send_github_comment
-from src.pr_bot_agent import PRBotAgent
+from src.github_tools.github_comment import send_github_comment
+from src.agent.pr_bot_agent import PRBotAgent
 from src.utility.fetch_utility import fetch_github_file
 from src.utility.langfuse_helper import get_langfuse_callback
 from src.utility.model_loader import ClassicILLMLoader
@@ -43,7 +43,7 @@ def main():
                 'pr_patch': filtered_p,
                 'custom_instruction': c_instruction,
             },
-            {'run_name': 'Lesson Summary v2', "callbacks": get_langfuse_callback()})
+            {'run_name': 'PR Agent', "callbacks": get_langfuse_callback()})
 
             send_github_comment(comment_url, feedback_content['plan'])
 
