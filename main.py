@@ -8,12 +8,14 @@ from filter_pr_helper import filter_patch
 from src.github_tools.github_comment import send_github_comment
 from src.agent.pr_bot_agent import PRBotAgent
 from src.utility.fetch_utility import fetch_github_file, fetch_github_patch
+from src.utility.llm_state import LLMAPIConfig
 from src.utility.model_loader import ClassicILLMLoader
 
 
 async def main():
     load_dotenv()
 
+    api_config = LLMAPIConfig.get_config()
     token = os.getenv('BOT_GH_TOKEN')
 
     github_event_raw_json = sys.argv[1]

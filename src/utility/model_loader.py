@@ -3,6 +3,8 @@ from abc import ABC, abstractmethod
 
 from langchain_core.language_models import BaseChatModel, FakeListChatModel
 
+from src.utility.llm_state import LLMAPIConfig
+
 GPT4o_mini = 'gpt-4o-mini'
 GPT4o = 'gpt-4o'
 GPT41 = 'gpt-4.1'
@@ -14,12 +16,18 @@ class ILLMLoader(ABC):
         pass
 
 class ClassicILLMLoader(ILLMLoader):
+    def __init__(self, default_api_config: LLMAPIConfig):
+        self._default_api_config = default_api_config
+
     def get_llm_model(self, provider: str=None, model_name: str=None, **kwargs) -> BaseChatModel:
         if provider is None:
-            provider = os.getenv('LLM_PROVIDER')
+            provider = self._default_api_config.provider
 
         if model_name is None:
-            model_name = os.getenv('LLM_MODEL')
+            model_name = self._default_api_config.model
+
+        print('provider name', provider)
+        print('model_name', model_name)
 
         provider_table = {
             'openai': self.openai_model,
@@ -34,7 +42,7 @@ class ClassicILLMLoader(ILLMLoader):
         raise RuntimeError(f"No such provider: '{provider}' and model: '{model_name}'")
 
     @staticmethod
-    def openai_model(deployment_name: str, **kwargs):
+    def openai_model(deployment_name: str, api_key=str, **kwargs):
         from langchain_openai import ChatOpenAI
 
         cfg = {
