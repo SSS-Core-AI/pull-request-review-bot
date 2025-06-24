@@ -31,7 +31,7 @@ async def main():
         c_instruction = await fetch_github_file(content_url=content_url, file_path='pull_request_bot_instruction.txt',
                           sha=sha, token=token)
 
-        agent = PRBotAgent(ClassicILLMLoader())
+        agent = PRBotAgent(ClassicILLMLoader(api_config))
         agent_graph = agent.create_graph()
 
         feedback_content = agent_graph.invoke({
