@@ -2,7 +2,6 @@ import os
 from abc import ABC, abstractmethod
 
 from langchain_core.language_models import BaseChatModel, FakeListChatModel
-from langchain_litellm import ChatLiteLLM
 
 GPT4o_mini = 'gpt-4o-mini'
 GPT4o = 'gpt-4o'
