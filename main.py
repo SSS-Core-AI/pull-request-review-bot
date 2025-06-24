@@ -1,3 +1,5 @@
+import asyncio
+import json
 import os
 import sys
 from dotenv import load_dotenv
@@ -5,12 +7,11 @@ from dotenv import load_dotenv
 from filter_pr_helper import filter_patch
 from src.github_tools.github_comment import send_github_comment
 from src.agent.pr_bot_agent import PRBotAgent
-from src.utility.fetch_utility import fetch_github_file
-from src.utility.langfuse_helper import get_langfuse_callback
+from src.utility.fetch_utility import fetch_github_file, fetch_github_patch
 from src.utility.model_loader import ClassicILLMLoader
 
 
-def main():
+async def main():
     load_dotenv()
 
     sha = os.getenv('SHA')
@@ -20,36 +21,36 @@ def main():
         print("Usage: python my_script.py <patch_file>")
         sys.exit(1)
 
-    patch_file = sys.argv[1]
-    comment_url = sys.argv[2]
-    content_url = sys.argv[3]
+    github_event_raw_json = sys.argv[1]
+    github_event_json = json.loads(github_event_raw_json)
+    patch_content = await fetch_github_patch(pull_request_url=github_event_json['pull_request']['url'], token=token)
 
-    print('Hello world')
+    print(patch_content)
 
-    try:
-        with open(patch_file, 'r') as file:
-            patch_lines = file.readlines()
-
-            filtered_p = ''.join(filter_patch(patch_lines))
-
-            # Get the custom instruction
-            c_instruction = fetch_github_file(content_url=content_url, file_path='pull_request_bot_instruction.txt',
-                              sha=sha, token=token)
-
-            agent = PRBotAgent(ClassicILLMLoader())
-            agent_graph = agent.create_graph()
-
-            feedback_content = agent_graph.invoke({
-                'pr_patch': filtered_p,
-                'custom_instruction': c_instruction,
-            },
-            {'run_name': 'PR Agent', "callbacks": get_langfuse_callback()})
-
-            send_github_comment(comment_url, feedback_content['plan'])
-
-    except Exception as e:
-        print(f"Error reading {patch_file}: {e}")
-        sys.exit(1)
+    # try:
+    #     with open(patch_file, 'r') as file:
+    #         patch_lines = file.readlines()
+    #
+    #         filtered_p = ''.join(filter_patch(patch_lines))
+    #
+    #         # Get the custom instruction
+    #         c_instruction = fetch_github_file(content_url=content_url, file_path='pull_request_bot_instruction.txt',
+    #                           sha=sha, token=token)
+    #
+    #         agent = PRBotAgent(ClassicILLMLoader())
+    #         agent_graph = agent.create_graph()
+    #
+    #         feedback_content = agent_graph.invoke({
+    #             'pr_patch': filtered_p,
+    #             'custom_instruction': c_instruction,
+    #         },
+    #         {'run_name': 'PR Agent'})
+    #
+    #         send_github_comment(comment_url, feedback_content['plan'])
+    #
+    # except Exception as e:
+    #     print(f"Error reading {patch_file}: {e}")
+    #     sys.exit(1)
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
