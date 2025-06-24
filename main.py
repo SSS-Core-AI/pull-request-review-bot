@@ -26,7 +26,7 @@ async def main():
 
     try:
         # Get the custom instruction
-        c_instruction = fetch_github_file(content_url=content_url, file_path='pull_request_bot_instruction.txt',
+        c_instruction = await fetch_github_file(content_url=content_url, file_path='pull_request_bot_instruction.txt',
                           sha=sha, token=token)
 
         agent = PRBotAgent(ClassicILLMLoader())
