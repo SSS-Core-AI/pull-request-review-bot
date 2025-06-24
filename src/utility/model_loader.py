@@ -26,9 +26,6 @@ class ClassicILLMLoader(ILLMLoader):
         if model_name is None:
             model_name = self._default_api_config.model
 
-        print('provider name', provider)
-        print('model_name', model_name)
-
         provider_table = {
             'openai': self.openai_model,
             'anthropic': self.anthropic_model,

@@ -26,6 +26,8 @@ async def main():
     comment_url = github_event_json['pull_request']['comments_url']
     content_url = github_event_json['repository']['contents_url']
 
+    print('Patch content', patch_content)
+
     try:
         # Get the custom instruction
         c_instruction = await fetch_github_file(content_url=content_url, file_path='pull_request_bot_instruction.txt',
