@@ -1,7 +1,7 @@
 import httpx
 
 async def fetch_url(url: str, headers: dict):
-    with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient() as client:
         response = await client.get(url, headers=headers)
         response.raise_for_status()
         return response.text
