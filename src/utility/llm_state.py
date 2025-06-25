@@ -19,3 +19,4 @@ class LLMAPIConfig(BaseModel):
             api_base = os.getenv('LLM_API_BASE'),
             api_version = os.getenv('LLM_API_VERSION'),
         )
+

@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from filter_pr_helper import filter_patch
 from src.github_tools.github_comment import send_github_comment
 from src.agent.pr_bot_agent import PRBotAgent
-from src.utility.fetch_utility import fetch_github_file, fetch_github_patch
+from src.utility.fetch_utility import fetch_github_file, fetch_github_patch, fetch_github_files
 from src.utility.llm_state import LLMAPIConfig
 from src.utility.model_loader import ClassicILLMLoader
 
@@ -25,6 +25,8 @@ async def main():
     sha = github_event_json['pull_request']['head']['sha']
     comment_url = github_event_json['pull_request']['comments_url']
     content_url = github_event_json['repository']['contents_url']
+    self_repo_url = github_event_json['pull_request']['_links']['self']
+    file_repo_url = self_repo_url+'/files'
 
     print('Patch content', patch_content)
 
@@ -33,6 +35,10 @@ async def main():
         c_instruction = await fetch_github_file(content_url=content_url, file_path='pull_request_bot_instruction.txt',
                           sha=sha, token=token)
 
+        commit_file_array = await fetch_github_files(file_repo_url, token=token)
+
+        print(commit_file_array)
+        
         agent = PRBotAgent(ClassicILLMLoader(api_config))
         agent_graph = agent.create_graph()
 

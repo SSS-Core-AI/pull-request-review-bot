@@ -1,4 +1,9 @@
+import json
+from pydantic import BaseModel, TypeAdapter
 import httpx
+
+from src.model.pull_request_model import FileModel
+
 
 async def fetch_url(url: str, headers: dict):
     async with httpx.AsyncClient() as client:
@@ -34,4 +39,20 @@ async def fetch_github_file(content_url: str, file_path: str, sha: str, token: s
         return await fetch_url(full_url, headers)
     except Exception as e :
         print(f'fetch_github_file: {full_url}', e)
+        return ''
+
+async def fetch_github_files(content_url: str, token: str) -> str:
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28"
+    }
+
+    try:
+        ta = TypeAdapter(list[FileModel])
+        files = ta.validate_python(json.loads(await fetch_url(content_url, headers)))
+
+        return files
+    except Exception as e:
+        print(f'fetch_github_file: {content_url}', e)
         return ''
