@@ -1,12 +1,10 @@
-import os
-
 from langchain_core.output_parsers import StrOutputParser
 from langgraph.constants import END
 from langgraph.graph import StateGraph
 
-from src.agent.pr_bot_state import ChatbotAgentState
-from src.agent.prompt_static import PLAN_SYSTEM_PROMPT, PLAN_HUMAN_PROMPT
-from src.utility.model_loader import ILLMLoader, GPT41
+from src.agent.pull_request.pr_bot_state import ChatbotAgentState
+from src.agent.pull_request.prompt_static import PLAN_SYSTEM_PROMPT, PLAN_HUMAN_PROMPT
+from src.utility.model_loader import ILLMLoader
 from src.utility.module_prompt_factory import ModulePromptFactory
 
 class PRBotAgent:

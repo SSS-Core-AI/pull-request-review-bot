@@ -1,9 +1,8 @@
-import asyncio
 import os
 import sys
 from langfuse.langchain import CallbackHandler
 
-from src.agent.pr_bot_agent import PRBotAgent
+from src.agent.pull_request.pr_bot_agent import PRBotAgent
 from src.utility.model_loader import ClassicILLMLoader
 
 langfuse_handler = CallbackHandler()

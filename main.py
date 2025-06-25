@@ -4,9 +4,8 @@ import os
 import sys
 from dotenv import load_dotenv
 
-from filter_pr_helper import filter_patch
 from src.github_tools.github_comment import send_github_comment
-from src.agent.pr_bot_agent import PRBotAgent
+from src.agent.pull_request.pr_bot_agent import PRBotAgent
 from src.repo.pr_agent_repo import PRAgentRepo
 from src.utility.fetch_utility import fetch_github_file, fetch_github_patch, fetch_github_files
 from src.utility.llm_state import LLMAPIConfig

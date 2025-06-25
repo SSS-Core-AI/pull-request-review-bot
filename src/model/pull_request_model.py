@@ -1,4 +1,6 @@
-from pydantic import BaseModel
+from typing import Optional
+
+from pydantic import BaseModel, Field
 
 
 class PullRequestInputModel(BaseModel):
@@ -20,3 +22,4 @@ class FileModel(BaseModel):
     raw_url: str
     contents_url: str
     patch: str
+    raw_content: Optional[str] = Field(default='')
