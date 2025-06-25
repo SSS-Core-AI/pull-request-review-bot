@@ -26,6 +26,7 @@ async def main():
     comment_url = github_event_json['pull_request']['comments_url']
     content_url = github_event_json['repository']['contents_url']
     self_repo_url = github_event_json['pull_request']['_links']['self']
+    print('self_repo_url', self_repo_url)
     file_repo_url = self_repo_url+'/files'
 
     print('Patch content', patch_content)
@@ -38,7 +39,7 @@ async def main():
         commit_file_array = await fetch_github_files(file_repo_url, token=token)
 
         print(commit_file_array)
-        
+
         agent = PRBotAgent(ClassicILLMLoader(api_config))
         agent_graph = agent.create_graph()
 
