@@ -16,7 +16,7 @@ class PRAgentRepo:
         tasks = []
         async with asyncio.TaskGroup() as tg:
             tasks = [
-                tg.create_task(fetch_github_file(file.contents_url, file.file_path, file.sha, self._token))
+                tg.create_task(fetch_github_file(file.contents_url, file.filename, file.sha, self._token))
                 for file in commit_file_array
             ]
 
