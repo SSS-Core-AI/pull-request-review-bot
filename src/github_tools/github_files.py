@@ -4,7 +4,7 @@ import re
 from src.model.pull_request_model import FileModel
 from src.utility.fetch_utility import fetch_github_file
 
-REGEX_FIND_IMPORT_SCRIPT = r'^[\s]*(?:import|from|#include|using|use|require|extern\s+crate)[\s\(\'\"]*(.+?)[\s\)\'\";\}]*$'
+REGEX_FIND_IMPORT_SCRIPT = r'^([\s]*(?:import|from|#include|using|use|require|extern\s+crate)[\s\(\'\"]*.*?)[\s\)\'\";\}]*$'
 regex_find_imports_cache = re.compile(REGEX_FIND_IMPORT_SCRIPT, re.MULTILINE)
 
 async def fetch_full_files(commit_file_array: list[FileModel], content_url: str, sha: str, token: str):
