@@ -55,4 +55,4 @@ async def fetch_github_files(content_url: str, token: str) -> list[FileModel]:
         return files
     except Exception as e:
         print(f'fetch_github_file: {content_url}', e)
-        return ''
+        return []

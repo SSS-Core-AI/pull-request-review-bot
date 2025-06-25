@@ -34,7 +34,12 @@ def find_import_scripts_str(commit_file_array: list[FileModel]):
     all_dependencies_array = []
 
     for commit_file in commit_file_array:
+        print('commit_file.raw_content', commit_file.raw_content)
+
         all_groups = regex_find_imports_cache.findall(commit_file.raw_content)
+
+        print('all_groups', all_groups)
+
         all_groups = [group.strip() for group in all_groups]
         dependencies = '\n'.join(all_groups)
 
