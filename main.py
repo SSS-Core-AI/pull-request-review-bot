@@ -25,8 +25,7 @@ async def main():
     sha = github_event_json['pull_request']['head']['sha']
     comment_url = github_event_json['pull_request']['comments_url']
     content_url = github_event_json['repository']['contents_url']
-    self_repo_url = github_event_json['pull_request']['_links']['self']
-    print('self_repo_url', self_repo_url)
+    self_repo_url = github_event_json['pull_request']['_links']['self']['href']
     file_repo_url = self_repo_url+'/files'
 
     print('Patch content', patch_content)
