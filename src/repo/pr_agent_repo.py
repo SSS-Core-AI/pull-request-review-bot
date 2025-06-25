@@ -8,15 +8,17 @@ from src.utility.model_loader import ClassicILLMLoader
 
 
 class PRAgentRepo:
-    def __init__(self, api_config: LLMAPIConfig, token: str):
+    def __init__(self, api_config: LLMAPIConfig, content_url: str, sha: str, token: str):
         self._api_config = api_config
+        self._content_url = content_url
+        self._sha = sha
         self._token = token
 
     async def preprocessing(self, commit_file_array: list[FileModel]):
         tasks = []
         async with asyncio.TaskGroup() as tg:
             tasks = [
-                tg.create_task(fetch_github_file(file.contents_url, file.filename, file.sha, self._token))
+                tg.create_task(fetch_github_file(self._content_url, file.filename, self._sha, self._token))
                 for file in commit_file_array
             ]
 

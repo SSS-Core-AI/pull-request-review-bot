@@ -36,7 +36,7 @@ async def main():
 
         commit_file_array = await fetch_github_files(file_repo_url, token=token)
 
-        pr_repo = PRAgentRepo(api_config, token)
+        pr_repo = PRAgentRepo(api_config, content_url, sha, token)
         await pr_repo.preprocessing(commit_file_array)
 
         pr_repo.run_agent(patch_content=patch_content, c_instruction=c_instruction)
