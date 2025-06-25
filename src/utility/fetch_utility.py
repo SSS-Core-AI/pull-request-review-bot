@@ -41,7 +41,7 @@ async def fetch_github_file(content_url: str, file_path: str, sha: str, token: s
         print(f'fetch_github_file: {full_url}', e)
         return ''
 
-async def fetch_github_files(content_url: str, token: str) -> str:
+async def fetch_github_files(content_url: str, token: str) -> list[FileModel]:
     headers = {
         "Authorization": f"Bearer {token}",
         "Accept": "application/vnd.github+json",

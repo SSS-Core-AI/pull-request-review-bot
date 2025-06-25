@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from filter_pr_helper import filter_patch
 from src.github_tools.github_comment import send_github_comment
 from src.agent.pr_bot_agent import PRBotAgent
+from src.repo.pr_agent_repo import PRAgentRepo
 from src.utility.fetch_utility import fetch_github_file, fetch_github_patch, fetch_github_files
 from src.utility.llm_state import LLMAPIConfig
 from src.utility.model_loader import ClassicILLMLoader
@@ -28,8 +29,6 @@ async def main():
     self_repo_url = github_event_json['pull_request']['_links']['self']['href']
     file_repo_url = self_repo_url+'/files'
 
-    print('Patch content', patch_content)
-
     try:
         # Get the custom instruction
         c_instruction = await fetch_github_file(content_url=content_url, file_path='pull_request_bot_instruction.txt',
@@ -37,8 +36,10 @@ async def main():
 
         commit_file_array = await fetch_github_files(file_repo_url, token=token)
 
-        print(commit_file_array)
+        pr_repo = PRAgentRepo(api_config, token)
+        await pr_repo.preprocessing(commit_file_array)
 
+        pr_repo.run_agent(patch_content=patch_content, c_instruction=c_instruction)
         agent = PRBotAgent(ClassicILLMLoader(api_config))
         agent_graph = agent.create_graph()
 

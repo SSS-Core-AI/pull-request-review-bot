@@ -10,7 +10,7 @@ from src.utility.model_loader import ILLMLoader, GPT41
 from src.utility.module_prompt_factory import ModulePromptFactory
 
 class PRBotAgent:
-    def __init__(self, llm_loader: ILLMLoader, ):
+    def __init__(self, llm_loader: ILLMLoader ):
         self._llm_loader = llm_loader
 
     def _get_custom_instruction(self, c_instruction: str) -> str:
