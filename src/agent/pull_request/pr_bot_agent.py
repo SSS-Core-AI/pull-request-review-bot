@@ -66,10 +66,12 @@ Strictly follow the instruction
     def create_graph(self):
         g_workflow = StateGraph(ChatbotAgentState)
 
-        g_workflow.add_node('generate_plan_node', self._generate_pr_review_plan)
+        g_workflow.add_node('generate_plan_llm_node', self._generate_pr_review_plan)
+        g_workflow.add_node('file_crawler_llm_node', self._generate_file_crawler_agent)
 
-        g_workflow.set_entry_point('generate_plan_node')
-        g_workflow.add_edge('generate_plan_node', END)
+        g_workflow.set_entry_point('file_crawler_llm_node')
+        g_workflow.add_edge('file_crawler_llm_node', 'generate_plan_llm_node')
+        g_workflow.add_edge('generate_plan_llm_node', END)
 
         g_compile = g_workflow.compile()
         return g_compile
