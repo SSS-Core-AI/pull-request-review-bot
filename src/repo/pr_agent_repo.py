@@ -29,7 +29,7 @@ class PRAgentRepo:
         feedback_content = agent_graph.invoke({
             'pr_patch': patch_content,
             'custom_instruction': c_instruction,
-            'file_dependencies': self._file_dependencies_str
+            'file_dependencies_text': self._file_dependencies_str
         },
         {'run_name': 'PR bot Agent'})
 
