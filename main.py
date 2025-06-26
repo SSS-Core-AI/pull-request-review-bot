@@ -12,14 +12,12 @@ from src.utility.llm_state import LLMAPIConfig
 from src.utility.model_loader import ClassicILLMLoader
 
 
-async def main():
+async def main(github_event_json: dict):
     load_dotenv()
 
     api_config = LLMAPIConfig.get_config()
     token = os.getenv('BOT_GH_TOKEN')
 
-    github_event_raw_json = sys.argv[1]
-    github_event_json = json.loads(github_event_raw_json)
     patch_content = await fetch_github_patch(pull_request_url=github_event_json['pull_request']['url'], token=token)
 
     sha = github_event_json['pull_request']['head']['sha']
@@ -55,4 +53,4 @@ async def main():
         sys.exit(1)
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(main( json.loads(sys.argv[1]) ))
