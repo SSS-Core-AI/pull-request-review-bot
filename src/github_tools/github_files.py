@@ -26,7 +26,6 @@ async def fetch_full_files(commit_file_array: list[FileModel], content_url: str,
         file_model.raw_content = raw_file
         file_result.append(file_model)
 
-    print("Results:", files_concat_full_str)
     return file_result, files_concat_full_str
 
 
