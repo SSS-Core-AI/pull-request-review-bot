@@ -26,7 +26,7 @@ class PRAgentRepo:
         agent = PRBotAgent(ClassicILLMLoader(self._api_config))
         agent_graph = agent.create_graph()
 
-        print(self._file_dependencies_str)
+        print('self._file_dependencies_str', self._file_dependencies_str)
 
         feedback_content = agent_graph.invoke({
             'pr_patch': patch_content,

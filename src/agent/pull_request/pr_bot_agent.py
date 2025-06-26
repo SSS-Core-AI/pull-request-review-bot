@@ -39,7 +39,7 @@ Strictly follow the instruction
 
         r = simple_chain.with_config({"run_name": "File crawler"}).invoke({'file_dependencies_text': state['file_dependencies_text']})
         dependencies_list = parse_json(r)
-
+        print('dependencies_list', dependencies_list)
         return {'file_dependencies_list': dependencies_list}
 
     def _generate_pr_review_plan(self, state: ChatbotAgentState):
