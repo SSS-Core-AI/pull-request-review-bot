@@ -12,14 +12,6 @@ class PullRequestInputModel(BaseModel):
     fetch_file_url: str
 
 class FileModel(BaseModel):
-    sha: str
     filename: str
     status: str
-    additions: int
-    deletions: int
-    changes: int
-    blob_url: str
-    raw_url: str
-    contents_url: str
-    patch: str
     raw_content: Optional[str] = Field(default='')
