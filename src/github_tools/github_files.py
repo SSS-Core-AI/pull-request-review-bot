@@ -46,6 +46,7 @@ def find_import_scripts_str(commit_file_array: list[FileModel]):
         result = (f'From file path: {commit_file.filename}\n'
                   f'{dependencies}')
 
-        all_dependencies_array.append(result)
+        if len(all_dependencies_array) > 0:
+            all_dependencies_array.append(result)
 
     return '\n\n'.join(all_dependencies_array)

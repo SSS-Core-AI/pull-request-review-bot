@@ -38,7 +38,7 @@ async def main():
         pr_repo = PRAgentRepo(api_config, content_url, sha, token)
         await pr_repo.preprocessing(commit_file_array)
 
-        pr_repo.run_agent(patch_content=patch_content, c_instruction=c_instruction)
+        pr_repo.run_pr_agent(patch_content=patch_content, c_instruction=c_instruction)
         agent = PRBotAgent(ClassicILLMLoader(api_config))
         agent_graph = agent.create_graph()
 

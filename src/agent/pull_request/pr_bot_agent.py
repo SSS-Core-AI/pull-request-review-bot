@@ -2,13 +2,16 @@ from langchain_core.output_parsers import StrOutputParser
 from langgraph.constants import END
 from langgraph.graph import StateGraph
 
+from src.agent.file_crawler.file_crawler_prompt import FILE_CRAWLER_SYSTEM_PROMPT, FILE_CRAWLER_HUMAN_PROMPT
 from src.agent.pull_request.pr_bot_state import ChatbotAgentState
 from src.agent.pull_request.prompt_static import PLAN_SYSTEM_PROMPT, PLAN_HUMAN_PROMPT
 from src.utility.model_loader import ILLMLoader
 from src.utility.module_prompt_factory import ModulePromptFactory
+from src.utility.utility_func import parse_json
+
 
 class PRBotAgent:
-    def __init__(self, llm_loader: ILLMLoader ):
+    def __init__(self, llm_loader: ILLMLoader):
         self._llm_loader = llm_loader
 
     def _get_custom_instruction(self, c_instruction: str) -> str:
@@ -22,13 +25,32 @@ Strictly follow the instruction
 ```
 """)
 
+    def _generate_file_crawler_agent(self, state: ChatbotAgentState):
+        llm = self._llm_loader.get_llm_model()
+
+        simple_chain = ModulePromptFactory(
+            StrOutputParser(),
+            model=llm,
+            name='File crawler',
+            partial_variables={
+                'file_dependencies_text': state['file_dependencies_text']
+            },
+            system_prompt_text=FILE_CRAWLER_SYSTEM_PROMPT,
+            human_prompt_text=FILE_CRAWLER_HUMAN_PROMPT,
+        ).create_chain()
+
+        r = simple_chain.with_config({"run_name": "File crawler"}).invoke({})
+        dependencies_list = parse_json(r)
+
+        return {'file_dependencies_list': dependencies_list}
+
     def _generate_pr_review_plan(self, state: ChatbotAgentState):
         llm = self._llm_loader.get_llm_model()
 
         simple_chain = ModulePromptFactory(
             StrOutputParser(),
             model=llm,
-            name='Learning Objectives',
+            name='PR Bot Review',
             partial_variables={
                 'pr_patch': state['pr_patch'],
                 'custom_instruction': self._get_custom_instruction(state['custom_instruction'])
