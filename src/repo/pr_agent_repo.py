@@ -11,27 +11,22 @@ class PRAgentRepo:
         self._content_url = content_url
         self._sha = sha
         self._token = token
-        self._file_dependencies_str = ''
-
-    async def preprocessing(self, commit_file_array: list[FileModel]):
-        self._file_dependencies_str = await self.run_file_crawler(commit_file_array)
 
     async def run_file_crawler(self, commit_file_array: list[FileModel]):
         """Search the dependency for what is useful"""
         commit_file_array, full_concat_script = await fetch_full_files(commit_file_array, self._content_url, self._sha, self._token)
         return find_import_scripts_str(commit_file_array)
 
+    async def run_pr_agent(self, patch_content: str, c_instruction: str, commit_file_array: list[FileModel]):
+        file_dependencies_str = await self.run_file_crawler(commit_file_array)
 
-    def run_pr_agent(self, patch_content: str, c_instruction: str):
         agent = PRBotAgent(ClassicILLMLoader(self._api_config))
         agent_graph = agent.create_graph()
 
-        print('self._file_dependencies_str', self._file_dependencies_str)
-
-        feedback_content = agent_graph.invoke({
+        feedback_content = await agent_graph.ainvoke({
             'pr_patch': patch_content,
             'custom_instruction': c_instruction,
-            'file_dependencies_text': self._file_dependencies_str
+            'file_dependencies_text': file_dependencies_str
         },
         {'run_name': 'PR bot Agent'})
 

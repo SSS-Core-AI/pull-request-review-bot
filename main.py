@@ -33,19 +33,9 @@ async def main(github_event_json: dict):
     commit_file_array = await fetch_github_files(file_repo_url, token=token)
 
     pr_repo = PRAgentRepo(api_config, content_url, sha, token)
-    await pr_repo.preprocessing(commit_file_array)
-
-    pr_repo.run_pr_agent(patch_content=patch_content, c_instruction=c_instruction)
-    agent = PRBotAgent(ClassicILLMLoader(api_config))
-    agent_graph = agent.create_graph()
-
-    feedback_content = agent_graph.invoke({
-        'pr_patch': patch_content,
-        'custom_instruction': c_instruction,
-    },
-    {'run_name': 'PR Agent'})
-
-    send_github_comment(comment_url, feedback_content['plan'])
+    feedback_content = await pr_repo.run_pr_agent(patch_content=patch_content, c_instruction=c_instruction,
+                                                  commit_file_array=commit_file_array)
+    send_github_comment(comment_url, feedback_content)
 
 
 if __name__ == "__main__":
