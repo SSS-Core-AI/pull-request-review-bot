@@ -12,6 +12,11 @@ class PRAgentRepo:
     def __init__(self, api_config: LLMAPIConfig, file_crawler: FileCrawlerTool):
         self._api_config = api_config
         self._file_crawler = file_crawler
+
+        print('langfuse public key', os.getenv('LANGFUSE_PUBLIC_KEY'))
+        print('langfuse secret key', os.getenv('LANGFUSE_SECRET_KEY'))
+        print('langfuse host', os.getenv('LANGFUSE_HOST'))
+
         self._langfuse_handler = CallbackHandler(public_key=os.getenv('LANGFUSE_PUBLIC_KEY'))
 
     async def run_pr_agent(self, patch_content: str, c_instruction: str):
