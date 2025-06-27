@@ -12,7 +12,7 @@ class FileCrawlerTool:
         self._token = token
 
         for commit_file in self.commit_file_array:
-            self.file_table[commit_file.name] = commit_file
+            self.file_table[commit_file.filename] = commit_file
 
     async def search_script_contents(self, commit_file_array: list[FileModel])-> Tuple[list[FileModel], str, str]:
         """Search the dependency for what is useful"""
