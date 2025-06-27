@@ -2,7 +2,9 @@ from src.agent.file_crawler.file_crawler_tool import FileCrawlerTool
 from src.agent.pull_request.pr_bot_agent import PRBotAgent
 from src.utility.llm_state import LLMAPIConfig
 from src.utility.model_loader import ClassicILLMLoader
+from langfuse.langchain import CallbackHandler
 
+langfuse_handler = CallbackHandler()
 
 class PRAgentRepo:
     def __init__(self, api_config: LLMAPIConfig, file_crawler: FileCrawlerTool):
@@ -17,6 +19,6 @@ class PRAgentRepo:
             'pr_patch': patch_content,
             'custom_instruction': c_instruction,
         },
-        {'run_name': 'PR bot Agent'})
+        {'run_name': 'PR bot Agent', "callbacks": [langfuse_handler] })
 
         return feedback_content['plan']
