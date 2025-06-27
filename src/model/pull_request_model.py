@@ -1,5 +1,5 @@
+from __future__ import annotations
 from typing import Optional
-
 from pydantic import BaseModel, Field
 
 
@@ -13,5 +13,5 @@ class PullRequestInputModel(BaseModel):
 
 class FileModel(BaseModel):
     filename: str
-    status: str
     raw_content: Optional[str] = Field(default='')
+    dependency_paths: Optional[list[str]] = Field(default=[])

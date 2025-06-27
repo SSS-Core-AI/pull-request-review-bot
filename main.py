@@ -4,12 +4,11 @@ import os
 import sys
 from dotenv import load_dotenv
 
+from src.agent.file_crawler.file_crawler_tool import FileCrawlerTool
 from src.github_tools.github_comment import send_github_comment
-from src.agent.pull_request.pr_bot_agent import PRBotAgent
 from src.repo.pr_agent_repo import PRAgentRepo
 from src.utility.fetch_utility import fetch_github_file, fetch_github_patch, fetch_github_files
 from src.utility.llm_state import LLMAPIConfig
-from src.utility.model_loader import ClassicILLMLoader
 
 
 async def main(github_event_json: dict):
@@ -32,9 +31,10 @@ async def main(github_event_json: dict):
 
     commit_file_array = await fetch_github_files(file_repo_url, token=token)
 
-    pr_repo = PRAgentRepo(api_config, content_url, sha, token)
-    feedback_content = await pr_repo.run_pr_agent(patch_content=patch_content, c_instruction=c_instruction,
-                                                  commit_file_array=commit_file_array)
+    file_crawler = FileCrawlerTool(commit_file_array, content_url=content_url, sha=sha, token=token)
+
+    pr_repo = PRAgentRepo(api_config, file_crawler)
+    feedback_content = await pr_repo.run_pr_agent(patch_content=patch_content, c_instruction=c_instruction)
     send_github_comment(comment_url, feedback_content)
 
 

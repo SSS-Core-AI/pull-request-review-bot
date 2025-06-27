@@ -18,6 +18,14 @@ you should catch src.model.pull_request_model and src.utility.fetch_utility as
 src/model/pull_request_model.py
 src/utility/fetch_utility.py
 
+And the json format will be like
+```
+{{
+    "file_path": "src/model/pull_request_model.py",
+    "dependencies_path": ["src/model/pull_request_model.py", "src/utility/fetch_utility.py"]
+}}
+```
+
 In actual environment, script file type is not always python, you should be prepare to face various type of programming langauge,
 but you can use file type to deduce it's programming langauge.
 
@@ -27,11 +35,16 @@ Even if the script is import as relative path, you should still output in full p
 FILE_CRAWLER_HUMAN_PROMPT = """\
 [File name and its dependencies]
 '''
-{file_dependencies_text}
+{file_dependencies_path_text}
 '''
 
 Output the dependency file path in the format of json array as below
 ```json
-["dependency_file_path"]
+[
+    {{
+        "file_path": "the path of main file",
+        "dependencies_path": [a list of dependency file paths]
+    }}
+]
 ```
 """

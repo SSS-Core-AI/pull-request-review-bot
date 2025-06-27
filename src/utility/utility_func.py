@@ -23,7 +23,7 @@ def parse_block(code: str, raw_message: str) -> str:
 
     return raw_message
 
-def parse_json(raw_message: str) -> dict:
+def parse_json(raw_message: str) -> dict | list:
     try:
         return json_repair.loads(parse_block('json', raw_message))
     except Exception as e:
