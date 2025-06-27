@@ -35,7 +35,7 @@ class PRBotAgent:
             human_prompt_text=FILE_CRAWLER_HUMAN_PROMPT,
         ).create_chain()
 
-        r = simple_chain.with_config({"run_name": "File crawler"}).ainvoke({'file_dependencies_path_text': state['file_dependencies_path_text']})
+        r = await (simple_chain.with_config({"run_name": "File crawler"}).ainvoke({'file_dependencies_path_text': state['file_dependencies_path_text']}))
         dependencies_list: list[dict] = parse_json(r)
 
         await self._file_crawler.fetch_llm_files_content(dependencies_list)
@@ -57,7 +57,7 @@ class PRBotAgent:
             human_prompt_text=PLAN_HUMAN_PROMPT,
         ).create_chain()
 
-        r = await simple_chain.with_config({"run_name": "PR Plan"}).ainvoke({})
+        r = await (simple_chain.with_config({"run_name": "PR Plan"}).ainvoke({}))
 
         return {'plan': r}
 
