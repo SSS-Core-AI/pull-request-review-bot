@@ -4,13 +4,13 @@ from src.agent.file_crawler.file_crawler_tool import FileCrawlerTool
 from src.agent.pull_request.pr_bot_agent import PRBotAgent
 from src.utility.llm_state import LLMAPIConfig
 from src.utility.model_loader import ClassicILLMLoader
-from langfuse.langchain import CallbackHandler
+from langfuse.callback import CallbackHandler
 
 class PRAgentRepo:
     def __init__(self, api_config: LLMAPIConfig, file_crawler: FileCrawlerTool):
         self._api_config = api_config
         self._file_crawler = file_crawler
-        self._langfuse_handler = CallbackHandler(public_key=os.getenv('LANGFUSE_PUBLIC_KEY'))
+        self._langfuse_handler = CallbackHandler(user_id='github_action')
 
     async def run_pr_agent(self, patch_content: str, c_instruction: str):
         agent = PRBotAgent(ClassicILLMLoader(self._api_config), self._file_crawler)
