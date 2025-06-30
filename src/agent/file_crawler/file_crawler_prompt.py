@@ -29,6 +29,9 @@ And the json format will be like
 In actual environment, script file type is not always python, you should be prepare to face various type of programming langauge,
 but you can use file type to deduce it's programming langauge.
 
+When creating "dependencies_path", all folder name must exist on the "file_path" column.
+Do not make up on your own.
+
 Even if the script is import as relative path, you should still output in full path
 """
 
