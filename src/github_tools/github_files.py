@@ -20,6 +20,9 @@ async def fetch_full_files(commit_file_array: list[FileModel], content_url: str,
 
     files_concat_full_str = ''
     for file_model, raw_file in zip(commit_file_array, results):
+        if raw_file == '':
+            continue
+
         files_concat_full_str += (f'# region file {file_model.filename}:\n'
                                   f'{raw_file}\n'
                                   f'# endregion file {file_model.filename}\n\n')
@@ -36,7 +39,7 @@ def find_import_scripts_str(commit_file_array: list[FileModel]):
 
         all_groups = regex_find_imports_cache.findall(commit_file.raw_content)
 
-
+        script_and_dependency_str(commit_file)
         all_groups = [group.strip() for group in all_groups]
         dependencies = '\n'.join(all_groups)
 
@@ -47,3 +50,13 @@ def find_import_scripts_str(commit_file_array: list[FileModel]):
             all_dependencies_array.append(result)
 
     return '\n\n'.join(all_dependencies_array)
+
+
+def script_and_dependency_str(file_model: FileModel):
+    all_groups = [group.strip() for group in file_model.dependency_paths]
+    dependencies = '\n'.join(all_groups)
+
+    result = (f'Main file path: {file_model.filename}\n'
+              f'Dependencies: {dependencies}')
+
+    return result
