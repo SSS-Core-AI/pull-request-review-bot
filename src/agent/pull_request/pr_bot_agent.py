@@ -86,7 +86,7 @@ class PRBotAgent:
         g_workflow = StateGraph(ChatbotAgentState)
 
         g_workflow.add_node('generate_plan_llm_node', self._llm_pr_review_plan)
-        g_workflow.add_node('generate_draft_llm_node', self._llm_pr_review_plan)
+        g_workflow.add_node('generate_draft_llm_node', self._llm_pr_draft_plan)
 
         g_workflow.add_node('file_preparation_node', self._file_preparation)
         g_workflow.add_node('file_dependency_path_node', self._llm_file_dependency_path)
