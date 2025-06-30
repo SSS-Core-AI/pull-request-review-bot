@@ -19,16 +19,10 @@ class PRBotAgent:
 
     async def _file_preparation(self, state: ChatbotAgentState):
         """ Get all the file dependencies path """
-        print('self._file_crawler.commit_file_array', self._file_crawler.commit_file_array)
-
         commit_file_array, commit_file_concat_str, file_dependencies_str = await self._file_crawler.search_script_contents(self._file_crawler.commit_file_array)
         self._file_crawler.commit_file_array = commit_file_array
 
-        print('commit_file_array', commit_file_array)
-        print('commit_file_concat_str', commit_file_concat_str)
-        print('file_dependencies_str', file_dependencies_str)
-
-        return {'file_commit_concat_text': commit_file_concat_str,'file_dependencies_path_text': file_dependencies_str}
+        return {'file_commit_concat_text': commit_file_concat_str,'file_dependency_paths_text': file_dependencies_str}
 
     async def _llm_file_dependency_path(self, state: ChatbotAgentState):
         """ Grab and fetch the script content from all dependencies """
@@ -41,7 +35,7 @@ class PRBotAgent:
             human_prompt_text=FILE_CRAWLER_HUMAN_PROMPT,
         ).create_chain()
 
-        r = await (simple_chain.with_config({"run_name": "File crawler"}).ainvoke({'file_dependencies_path_text': state['file_dependencies_path_text']}))
+        r = await (simple_chain.with_config({"run_name": "File crawler"}).ainvoke({'file_dependency_paths_text': state['file_dependency_paths_text']}))
         dependencies_list: list[dict] = parse_json(r)
 
         await self._file_crawler.fetch_llm_files_content(dependencies_list)

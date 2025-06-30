@@ -35,7 +35,7 @@ Even if the script is import as relative path, you should still output in full p
 FILE_CRAWLER_HUMAN_PROMPT = """\
 [File name and its dependencies]
 '''
-{file_dependencies_path_text}
+{file_dependency_paths_text}
 '''
 
 Output the dependency file path in the format of json array as below
@@ -43,7 +43,7 @@ Output the dependency file path in the format of json array as below
 [
     {{
         "file_path": "the path of main file",
-        "dependencies_path": [a list of dependency file paths]
+        "dependency_paths": [a list of dependency file paths]
     }}
 ]
 ```
