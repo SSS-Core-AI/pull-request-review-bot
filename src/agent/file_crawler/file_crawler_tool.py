@@ -1,5 +1,5 @@
 from typing import Tuple
-from src.github_tools.github_files import fetch_full_files, find_import_scripts_str
+from src.github_tools.github_files import fetch_full_files, find_import_scripts_str, script_and_dependency_str
 from src.model.pull_request_model import FileModel
 
 
@@ -13,6 +13,15 @@ class FileCrawlerTool:
 
         for commit_file in self.commit_file_array:
             self.file_table[commit_file.filename] = commit_file
+
+    def get_commit_files_dependencies_str(self):
+        file_dependency_list = []
+
+        for commit_file in self.commit_file_array:
+            if commit_file.filename in self.file_table:
+                file_dependency_list.append(script_and_dependency_str(self.file_table[commit_file.filename]))
+
+        return '\n\n'.join(file_dependency_list)
 
     async def search_script_contents(self, commit_file_array: list[FileModel])-> Tuple[list[FileModel], str, str]:
         """Search the dependency for what is useful"""

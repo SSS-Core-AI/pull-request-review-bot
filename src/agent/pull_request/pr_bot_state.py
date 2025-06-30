@@ -6,6 +6,7 @@ from src.model.pull_request_model import FileModel
 class ChatbotAgentState(TypedDict):
     pr_patch: str
     plan: str
+    briefs: list
     custom_instruction: str
 
     file_commit_concat_text: str # Concat content of all commit files
