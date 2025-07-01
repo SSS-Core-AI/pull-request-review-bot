@@ -4,7 +4,7 @@ You will provide useful feedback on the pr patch content.
 Only focus on the code itself, ignore metadata
 
 Given a pull request patch, the commited files name and its dependency files name
-However, you job here is to point out the possible issue fit the criteria\
+Your job here is to point out the possible issue fit the criteria\
 """
 
 PR_DRAFT_HUMAN_PROMPT = """\
@@ -22,6 +22,8 @@ PR_DRAFT_HUMAN_PROMPT = """\
 '''
 {custom_instruction}
 '''
+
+Focus on the potential issue from [PR PATCH], and used [File and its dependency] as supplement materials
 
 Output the dependency file path in the format of json array as below
 ```json

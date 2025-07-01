@@ -56,7 +56,9 @@ def script_and_dependency_str(file_model: FileModel):
     all_groups = [group.strip() for group in file_model.dependency_paths]
     dependencies = '\n'.join(all_groups)
 
-    result = (f'Main file path: {file_model.filename}\n'
-              f'Dependencies: {dependencies}')
+    result = f'Main file path: {file_model.filename}\n'
+
+    if len(all_groups) > 0:
+        result +=  f'Dependencies: {dependencies}'
 
     return result
