@@ -1,25 +1,42 @@
-import os
-
 from src.agent.file_crawler.file_crawler_tool import FileCrawlerTool
 from src.agent.pull_request.pr_bot_agent import PRBotAgent
+from src.agent.pull_request.summary_prompt import PR_SUMMARY_HUMAN_PROMPT, PR_SUMMARY_SYSTEM_PROMPT
 from src.utility.llm_state import LLMAPIConfig
 from src.utility.model_loader import ClassicILLMLoader
 from langfuse.callback import CallbackHandler
+from langchain_core.output_parsers import StrOutputParser
+from src.utility.module_prompt_factory import ModulePromptFactory
+
+
 
 class PRAgentRepo:
-    def __init__(self, api_config: LLMAPIConfig, file_crawler: FileCrawlerTool):
+    def __init__(self, session_id: str, api_config: LLMAPIConfig):
         self._api_config = api_config
-        self._file_crawler = file_crawler
-        self._langfuse_handler = CallbackHandler(user_id='github_action')
+        self._langfuse_handler = CallbackHandler(user_id='github_action', session_id=session_id)
+        self._llm_loader = ClassicILLMLoader(api_config)
 
-    async def run_pr_agent(self, patch_content: str, c_instruction: str):
-        agent = PRBotAgent(ClassicILLMLoader(self._api_config), self._file_crawler)
+    async def run_pr_agent(self, file_crawler: FileCrawlerTool,  patch_content: str, c_instruction: str):
+        agent = PRBotAgent(self._llm_loader, file_crawler)
         agent_graph = agent.create_graph()
 
         feedback_content = await agent_graph.ainvoke({
             'pr_patch': patch_content,
             'custom_instruction': c_instruction,
         },
-        {'run_name': 'PR bot Agent', "callbacks": [self._langfuse_handler] })
+        {'run_name': 'PR Issues Agent', "callbacks": [self._langfuse_handler] })
 
         return feedback_content['plans']
+
+    async def run_summary_agent(self, patch_content: str):
+        llm = self._llm_loader.get_llm_model()
+        simple_chain = ModulePromptFactory(
+            StrOutputParser(),
+            model=llm,
+            name='Summary',
+            system_prompt_text=PR_SUMMARY_SYSTEM_PROMPT,
+            human_prompt_text=PR_SUMMARY_HUMAN_PROMPT,
+        ).create_chain()
+
+        r = await (simple_chain.with_config({"run_name": "PR Summary Agent"}).ainvoke({'pr_patch': patch_content}))
+
+        return r

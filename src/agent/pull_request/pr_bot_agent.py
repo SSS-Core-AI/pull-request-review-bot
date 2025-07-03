@@ -109,7 +109,10 @@ class PRBotAgent:
 
         r = await (simple_chain.with_config({"run_name": f"PR Plan: {index}"}).ainvoke({}))
 
-        return r
+        issue_text = f'''### Issue {index + 1}
+{r}'''
+
+        return issue_text
 
     def create_graph(self):
         g_workflow = StateGraph(ChatbotAgentState)
