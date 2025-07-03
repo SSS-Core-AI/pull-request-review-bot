@@ -15,14 +15,27 @@ class FileCrawlerTool:
             self.file_table[commit_file.filename] = commit_file
 
     def get_commit_files_dependencies_str(self):
-        return self.get_files_str([f.filename for f in self.commit_file_array])
+        return self.get_files_dependencies_str([f.filename for f in self.commit_file_array])
+
+    def get_files_dependencies_str(self, file_paths: list[str]):
+        file_dependency_list = []
+
+        for commit_file in file_paths:
+            if commit_file in self.file_table:
+                file_dependency_list.append(script_and_dependency_str(self.file_table[commit_file]))
+
+        return '\n\n'.join(file_dependency_list)
+
 
     def get_files_str(self, file_paths: list[str]):
         file_dependency_list = []
 
         for commit_file in file_paths:
             if commit_file in self.file_table:
-                file_dependency_list.append(script_and_dependency_str(self.file_table[commit_file]))
+                file_dependency_list.append(
+                    f'''File name: {self.file_table[commit_file].filename}
+    File content: {self.file_table[commit_file].content}'''
+                )
 
         return '\n\n'.join(file_dependency_list)
 
