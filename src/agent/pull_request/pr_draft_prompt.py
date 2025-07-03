@@ -29,7 +29,8 @@ Output the dependency file path in the format of json array as below
 ```json
 [
     {{
-        "issue": "Point out what is the issue, where it happen and a short explanation",
+        "pr_patch": "The section on [PR PATCH], that has issue",
+        "issue": "a short explanation on what the issue is",
         "file_path": "the path of main file",
         "dependency_paths": [a list of dependency file paths, worth a look]
     }}

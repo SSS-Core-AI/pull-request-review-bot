@@ -76,7 +76,7 @@ class PRBotAgent:
                     tg.create_task(
                         self._llm_pr_review_plan(
                             index=index,
-                            patch=state['pr_patch'],
+                            patch=draft['pr_patch'],
                             instruction=get_custom_instruction(state['custom_instruction']),
                             issue=draft['issue'],
                             file_path=draft['file_path'],
