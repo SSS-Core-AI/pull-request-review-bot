@@ -37,6 +37,6 @@ class PRAgentRepo:
             human_prompt_text=PR_SUMMARY_HUMAN_PROMPT,
         ).create_chain()
 
-        r = await (simple_chain.with_config({"run_name": "PR Summary Agent"}).ainvoke({'pr_patch': patch_content}))
+        r = await (simple_chain.with_config({"run_name": "PR Summary Agent", "callbacks": [self._langfuse_handler]}).ainvoke({'pr_patch': patch_content}))
 
         return r
