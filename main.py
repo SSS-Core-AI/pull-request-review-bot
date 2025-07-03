@@ -53,11 +53,9 @@ async def main(github_event_json: dict):
     commit_file_array = commit_files_task.result()
 
     file_crawler = FileCrawlerTool(commit_file_array, content_url=content_url, sha=sha, token=token)
-    print('patch content:', patch_content)
     summary = await pr_repo.run_summary_agent(patch_content=patch_content)
 
-    print('summary:', summary)
-    
+
     await send_github_comment(comment_url, summary)
 
     # Issue comment agent
