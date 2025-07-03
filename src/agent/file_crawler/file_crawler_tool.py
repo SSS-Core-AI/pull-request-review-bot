@@ -15,13 +15,17 @@ class FileCrawlerTool:
             self.file_table[commit_file.filename] = commit_file
 
     def get_commit_files_dependencies_str(self):
+        return self.get_files_str([f.filename for f in self.commit_file_array])
+
+    def get_files_str(self, file_paths: list[str]):
         file_dependency_list = []
 
-        for commit_file in self.commit_file_array:
-            if commit_file.filename in self.file_table:
-                file_dependency_list.append(script_and_dependency_str(self.file_table[commit_file.filename]))
+        for commit_file in file_paths:
+            if commit_file in self.file_table:
+                file_dependency_list.append(script_and_dependency_str(self.file_table[commit_file]))
 
         return '\n\n'.join(file_dependency_list)
+
 
     async def search_script_contents(self, commit_file_array: list[FileModel])-> Tuple[list[FileModel], str, str]:
         """Search the dependency for what is useful"""

@@ -14,7 +14,30 @@ PLAN_HUMAN_PROMPT = """\
 {pr_patch}
 '''
 
+[Instruction]
+'''
 {custom_instruction}
+'''
+
+[Issue]
+'''
+{issue}
+'''
+
+[Full target script]
+'''
+{file_script}
+'''
+
+[Dependency file script]
+'''
+{dependency_script}
+'''
+
+Focus on [Issue],
+[PR PATCH] show you what has change that cause the [Issue].
+The full script of target file and its dependency is given.
+Use them as supplement material, so you have enough information exploit possible cause of issue 
 
 Output
 """

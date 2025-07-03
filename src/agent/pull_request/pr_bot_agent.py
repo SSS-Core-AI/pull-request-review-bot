@@ -73,7 +73,7 @@ class PRBotAgent:
         async with asyncio.TaskGroup() as tg:
             for index, draft in enumerate(draft_list):
                 tasks.append(
-                    asyncio.create_task(
+                    tg.create_task(
                         self._llm_pr_review_plan(
                             index=index,
                             patch=state['pr_patch'],
@@ -98,7 +98,10 @@ class PRBotAgent:
             name=f'PR Bot Review Index: {index}',
             partial_variables={
                 'pr_patch': patch,
-                'custom_instruction': get_custom_instruction(instruction)
+                'custom_instruction': get_custom_instruction(instruction),
+                'issue': issue,
+                'file_script': self._file_crawler.get_files_str([file_path]),
+                'dependency_script': self._file_crawler.get_files_str(dependency_paths),
             },
             system_prompt_text=PLAN_SYSTEM_PROMPT,
             human_prompt_text=PLAN_HUMAN_PROMPT,
