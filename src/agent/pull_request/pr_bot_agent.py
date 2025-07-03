@@ -1,3 +1,6 @@
+import asyncio
+from asyncio import Task
+
 from langchain_core.output_parsers import StrOutputParser
 from langgraph.constants import END
 from langgraph.graph import StateGraph
@@ -48,44 +51,67 @@ class PRBotAgent:
         simple_chain = ModulePromptFactory(
             StrOutputParser(),
             model=llm,
-            name='PR Brief',
+            name='PR Drafts',
             system_prompt_text=PR_DRAFT_SYSTEM_PROMPT,
             human_prompt_text=PR_DRAFT_HUMAN_PROMPT,
         ).create_chain()
 
-        r = await (simple_chain.with_config({"run_name": "PR Brief"}).ainvoke({
+        r = await (simple_chain.with_config({"run_name": "PR Drafts"}).ainvoke({
             'pr_patch': state['pr_patch'],
             'custom_instruction': get_custom_instruction(state['custom_instruction']),
             'committed_file_and_dependency': self._file_crawler.get_commit_files_dependencies_str(),
         }))
 
-        brief_list: list[dict] = parse_json(r)
+        drafts_list: list[dict] = parse_json(r)
 
-        return {'briefs': brief_list}
+        return {'drafts': drafts_list}
 
-    async def _llm_pr_review_plan(self, state: ChatbotAgentState):
+    async def _llm_pr_review_plans(self, state: ChatbotAgentState):
+        draft_list = state['drafts']
+
+        tasks: list[Task] = []
+        async with asyncio.TaskGroup() as tg:
+            for index, draft in enumerate(draft_list):
+                tasks.append(
+                    asyncio.create_task(
+                        self._llm_pr_review_plan(
+                            index=index,
+                            patch=state['pr_patch'],
+                            instruction=get_custom_instruction(state['custom_instruction']),
+                            issue=draft['issue'],
+                            file_path=draft['file_path'],
+                            dependency_paths=draft['dependency_paths'],
+                        )
+                    )
+                )
+
+        plans = [task.result() for task in tasks]
+
+        return {'plans': plans}
+
+    async def _llm_pr_review_plan(self, index: int, patch: str, instruction: str, issue: str, file_path: str,  dependency_paths: list[str]):
         llm = self._llm_loader.get_llm_model()
 
         simple_chain = ModulePromptFactory(
             StrOutputParser(),
             model=llm,
-            name='PR Bot Review',
+            name=f'PR Bot Review Index: {index}',
             partial_variables={
-                'pr_patch': state['pr_patch'],
-                'custom_instruction': get_custom_instruction(state['custom_instruction'])
+                'pr_patch': patch,
+                'custom_instruction': get_custom_instruction(instruction)
             },
             system_prompt_text=PLAN_SYSTEM_PROMPT,
             human_prompt_text=PLAN_HUMAN_PROMPT,
         ).create_chain()
 
-        r = await (simple_chain.with_config({"run_name": "PR Plan"}).ainvoke({}))
+        r = await (simple_chain.with_config({"run_name": f"PR Plan: {index}"}).ainvoke({}))
 
-        return {'plan': r}
+        return r
 
     def create_graph(self):
         g_workflow = StateGraph(ChatbotAgentState)
 
-        g_workflow.add_node('generate_plan_llm_node', self._llm_pr_review_plan)
+        g_workflow.add_node('generate_plan_llm_node', self._llm_pr_review_plans)
         g_workflow.add_node('generate_draft_llm_node', self._llm_pr_draft_plan)
 
         g_workflow.add_node('file_preparation_node', self._file_preparation)

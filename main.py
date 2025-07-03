@@ -2,6 +2,8 @@ import asyncio
 import json
 import os
 import sys
+import uuid
+
 from dotenv import load_dotenv
 
 from src.agent.file_crawler.file_crawler_tool import FileCrawlerTool
@@ -13,6 +15,7 @@ from src.utility.llm_state import LLMAPIConfig
 
 async def main(github_event_json: dict):
     load_dotenv()
+    session_id = uuid.uuid4()
 
     api_config = LLMAPIConfig.get_config()
     token = os.getenv('BOT_GH_TOKEN')
@@ -34,8 +37,8 @@ async def main(github_event_json: dict):
     file_crawler = FileCrawlerTool(commit_file_array, content_url=content_url, sha=sha, token=token)
 
     pr_repo = PRAgentRepo(api_config, file_crawler)
-    feedback_content = await pr_repo.run_pr_agent(patch_content=patch_content, c_instruction=c_instruction)
-    send_github_comment(comment_url, feedback_content)
+    feedback_contents = await pr_repo.run_pr_agent(patch_content=patch_content, c_instruction=c_instruction)
+    send_github_comment(comment_url, '\n\n'.join(feedback_contents))
 
 
 if __name__ == "__main__":

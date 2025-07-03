@@ -22,4 +22,4 @@ class PRAgentRepo:
         },
         {'run_name': 'PR bot Agent', "callbacks": [self._langfuse_handler] })
 
-        return feedback_content['plan']
+        return feedback_content['plans']
