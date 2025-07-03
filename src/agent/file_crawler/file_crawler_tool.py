@@ -34,7 +34,7 @@ class FileCrawlerTool:
             if commit_file in self.file_table:
                 file_dependency_list.append(
                     f'''File name: {self.file_table[commit_file].filename}
-    File content: {self.file_table[commit_file].content}'''
+    File content: {self.file_table[commit_file].raw_content}'''
                 )
 
         return '\n\n'.join(file_dependency_list)
