@@ -11,9 +11,10 @@ from src.agent.pull_request.pr_agent_tool import get_custom_instruction
 from src.agent.pull_request.pr_bot_state import ChatbotAgentState
 from src.agent.pull_request.pr_draft_prompt import PR_DRAFT_SYSTEM_PROMPT, PR_DRAFT_HUMAN_PROMPT
 from src.agent.pull_request.pr_plan_prompt import PLAN_SYSTEM_PROMPT, PLAN_HUMAN_PROMPT
+from src.model.pull_request_model import PullRequestIssueModel
 from src.utility.model_loader import ILLMLoader
 from src.utility.module_prompt_factory import ModulePromptFactory
-from src.utility.utility_func import parse_json
+from src.utility.utility_func import parse_json, get_priority_markdown
 
 
 class PRBotAgent:
@@ -108,9 +109,13 @@ class PRBotAgent:
         ).create_chain()
 
         r = await (simple_chain.with_config({"run_name": f"PR Plan: {index}"}).ainvoke({}))
+        plan_dict: dict = parse_json(r)
+        pr_issue_model = PullRequestIssueModel(**plan_dict)
 
-        issue_text = f'''### Issue {index + 1}
-{r}'''
+        issue_text = f'''### Issue: {pr_issue_model.issue_title}
+{get_priority_markdown(pr_issue_model.priority)}
+
+{pr_issue_model.content}'''
 
         return issue_text
 

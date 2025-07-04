@@ -1,4 +1,6 @@
 import re
+from typing import Literal
+
 import json_repair
 
 
@@ -23,9 +25,20 @@ def parse_block(code: str, raw_message: str) -> str:
 
     return raw_message
 
+
 def parse_json(raw_message: str) -> dict | list:
     try:
         return json_repair.loads(parse_block('json', raw_message))
     except Exception as e:
         print('parse_json fail to parse ', e)
         raise e
+
+
+def get_priority_markdown(priority: Literal['high', 'medium', 'low']):
+    match priority:
+        case 'high':
+            return '![High Priority](https://img.shields.io/badge/Priority-High-red)'
+        case 'medium':
+            return '![Medium Priority](https://img.shields.io/badge/Priority-Medium-orange)'
+        case _:
+            return '![Low Priority](https://img.shields.io/badge/Priority-Low-green)'

@@ -3,9 +3,7 @@ You are a professional code programmer and github pr reviewer.
 You will provide useful feedback on the pr patch content.
 Only focus on the quality of code, ignore metadata
 
-Output layout
-Line: which part of code match the Bad coding practice or Potential bug
-Reason: What should be change and improved on
+
 """
 
 PLAN_HUMAN_PROMPT = """\
@@ -40,4 +38,11 @@ The full script of target file and its dependency is given.
 Use them as supplement material, so you have enough information exploit possible cause of issue 
 
 Output
+```json
+{{
+    "issue_title": "the title of this issue",
+    "priority": "how serious is the issue, categorize into 'high', 'medium' and 'low' only",
+    "content": "Follow the [Instruction]"
+}}
+```
 """

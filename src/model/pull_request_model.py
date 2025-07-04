@@ -15,3 +15,9 @@ class FileModel(BaseModel):
     filename: str
     raw_content: Optional[str] = Field(default='')
     dependency_paths: Optional[list[str]] = Field(default=[])
+
+
+class PullRequestIssueModel(BaseModel):
+    issue_title: str = Field(default='', description='The title of the issue')
+    priority: str = Field(default='low', description='how serious is the issue, categorize into high, middle and low')
+    content: str = Field(default='', description='Follow the [Instruction]')
