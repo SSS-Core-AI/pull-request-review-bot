@@ -13,12 +13,6 @@ from src.utility.fetch_utility import fetch_github_file, fetch_github_patch, fet
 from src.utility.llm_state import LLMAPIConfig
 from src.utility.static_variable import CUSTOM_INSTRUCTION_FILE
 
-
-async def summarize_pr_patch(pr_repo: PRAgentRepo, patch_content: str, c_instruction: str):
-    # Summary comment agent
-    summary = await pr_repo.run_pr_agent(patch_content=patch_content, c_instruction=c_instruction)
-
-
 async def main(github_event_json: dict):
     load_dotenv()
     session_id = str(uuid.uuid4())
