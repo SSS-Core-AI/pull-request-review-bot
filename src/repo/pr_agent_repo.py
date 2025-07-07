@@ -41,5 +41,5 @@ class PRAgentRepo:
 
         r = ('### Summary\n'
              f'{r}')
-        
+
         return r

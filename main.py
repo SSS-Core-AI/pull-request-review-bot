@@ -11,6 +11,8 @@ from src.github_tools.github_comment import send_github_comment
 from src.repo.pr_agent_repo import PRAgentRepo
 from src.utility.fetch_utility import fetch_github_file, fetch_github_patch, fetch_github_files
 from src.utility.llm_state import LLMAPIConfig
+from src.utility.static_variable import CUSTOM_INSTRUCTION_FILE
+
 
 async def summarize_pr_patch(pr_repo: PRAgentRepo, patch_content: str, c_instruction: str):
     # Summary comment agent
@@ -39,7 +41,7 @@ async def main(github_event_json: dict):
 
         # Get the custom instruction
         c_instruction_task = tg.create_task(
-            fetch_github_file(content_url=content_url, file_path='pull_request_bot_instruction.txt',
+            fetch_github_file(content_url=content_url, file_path=CUSTOM_INSTRUCTION_FILE,
                               sha=sha, token=token)
         )
 
