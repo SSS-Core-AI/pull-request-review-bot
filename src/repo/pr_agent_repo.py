@@ -1,6 +1,7 @@
 from src.agent.file_crawler.file_crawler_tool import FileCrawlerTool
 from src.agent.pull_request.pr_bot_agent import PRBotAgent
 from src.agent.pull_request.summary_prompt import PR_SUMMARY_HUMAN_PROMPT, PR_SUMMARY_SYSTEM_PROMPT
+from src.utility.langfuse_helper import get_langfuse_callback
 from src.utility.llm_state import LLMAPIConfig
 from src.utility.model_loader import ClassicILLMLoader
 from langfuse.callback import CallbackHandler
@@ -12,7 +13,7 @@ from src.utility.module_prompt_factory import ModulePromptFactory
 class PRAgentRepo:
     def __init__(self, session_id: str, api_config: LLMAPIConfig):
         self._api_config = api_config
-        self._langfuse_handler = CallbackHandler(user_id='github_action', session_id=session_id)
+        self._langfuse_handler = get_langfuse_callback()
         self._llm_loader = ClassicILLMLoader(api_config)
 
     async def run_pr_agent(self, file_crawler: FileCrawlerTool,  patch_content: str, c_instruction: str):
@@ -23,7 +24,7 @@ class PRAgentRepo:
             'pr_patch': patch_content,
             'custom_instruction': c_instruction,
         },
-        {'run_name': 'PR Issues Agent', "callbacks": [self._langfuse_handler] })
+        {'run_name': 'PR Issues Agent', "callbacks": self._langfuse_handler })
 
         return feedback_content['plans']
 
@@ -37,7 +38,7 @@ class PRAgentRepo:
             human_prompt_text=PR_SUMMARY_HUMAN_PROMPT,
         ).create_chain()
 
-        r = await (simple_chain.with_config({"run_name": "PR Summary Agent", "callbacks": [self._langfuse_handler]}).ainvoke({'pr_patch': patch_content}))
+        r = await (simple_chain.with_config({"run_name": "PR Summary Agent", "callbacks": self._langfuse_handler}).ainvoke({'pr_patch': patch_content}))
 
         r = ('### Summary\n'
              f'{r}')
