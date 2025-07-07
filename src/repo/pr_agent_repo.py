@@ -4,7 +4,6 @@ from src.agent.pull_request.summary_prompt import PR_SUMMARY_HUMAN_PROMPT, PR_SU
 from src.utility.langfuse_helper import get_langfuse_callback
 from src.utility.llm_state import LLMAPIConfig
 from src.utility.model_loader import ClassicILLMLoader
-from langfuse.callback import CallbackHandler
 from langchain_core.output_parsers import StrOutputParser
 from src.utility.module_prompt_factory import ModulePromptFactory
 
