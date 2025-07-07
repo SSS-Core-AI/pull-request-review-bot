@@ -1,5 +1,16 @@
 # PR_AUTO
 
+## Supported LLM
+| Provider  | Models |
+| ------------- | ------------- |
+| openai  | [Table link](https://platform.openai.com/docs/models)  |
+| azure  | [Table link](https://learn.microsoft.com/en-us/azure/ai-foundry/openai/concepts/models?tabs=global-standard%2Cstandard-chat-completions)  |
+| google_genai  | [Table link](https://ai.google.dev/gemini-api/docs/models)  |
+| anthropic  | [Table link](https://docs.anthropic.com/en/docs/about-claude/models/overview)  |
+
+## Custom instruction
+Create a file under `./github/pr_agent/custom_instruction.txt`
+
 
 ## How to prepare repository summary
 1. **Checkout the files-to-prompt tool**</br>
@@ -34,4 +45,4 @@ files-to-prompt .\controllers\ .\models\ .\utils\ .\tests\ app.py main.py -e py 
    ```
 
 4. **Save the summary**</br>
-   Copy the model’s response into `repo_summary.txt` in your project root.
+   Copy the model’s response into `./github/pr_agent/repo_summary.txt` in your project root.
