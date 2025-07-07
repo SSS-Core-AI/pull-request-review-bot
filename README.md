@@ -1,5 +1,7 @@
 # PR_AUTO
 
+## Installation
+
 ## Supported LLM
 | Provider  | Models |
 | ------------- | ------------- |
