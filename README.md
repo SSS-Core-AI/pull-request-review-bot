@@ -1,6 +1,90 @@
 # PR_AUTO
 
 ## Installation
+### First step
+Register tokens (classic) 
+![image](https://github.com/user-attachments/assets/4d59a741-4b5b-4418-a510-d8457af79459)
+
+### Second step
+Copy and paste the yaml file to `./github/workflows/pr_review_bot.yaml`
+<details>
+<summary>Yaml file in detail</summary>
+
+``` yaml
+name: AUTO PR Review
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize # Comment out, if you don't want agent to run on every pr update
+      - reopened
+jobs:
+  auto-bot-review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout PR repository
+        uses: actions/checkout@v4
+
+      - name: Checkout private repository
+        uses: actions/checkout@v4
+        with:
+          repository: SSS-Core-AI/poc-pull-request-bot
+          token: ${{ secrets.BOT_GH_TOKEN }} # Your token (classic) here
+          path: poc-pull-request-bot
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12.9
+
+      - name: Create .env file with multiple variables
+        working-directory: poc-pull-request-bot
+        run: |
+          cat << EOF > .env
+          LLM_MODEL=gpt-4.1
+          LLM_PROVIDER=openai
+          LLM_API_KEY=${{secrets.LLM_API_KEY}}
+          LANGFUSE_SECRET_KEY=${{secrets.LANGFUSE_SECRET_KEY}}
+          LANGFUSE_PUBLIC_KEY=${{secrets.LANGFUSE_PUBLIC_KEY}}
+          LANGFUSE_HOST=${{secrets.LANGFUSE_HOST}}
+          BOT_GH_TOKEN=${{secrets.GITHUB_TOKEN}}
+          $([ -n "${{secrets.LLM_API_BASE}}" ] && echo "LLM_API_BASE=${{secrets.LLM_API_BASE}}")
+          $([ -n "${{secrets.LLM_API_VERSION}}" ] && echo "LLM_API_VERSION=${{secrets.LLM_API_VERSION}}")
+          EOF
+
+      - name: Install uv and packages
+        working-directory: poc-pull-request-bot
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          uv sync
+
+      - name: Execute
+        working-directory: poc-pull-request-bot
+        run: |
+          uv run python -m main '${{ toJSON(github.event) }}'
+```
+</details>
+
+| Key | Existence | Description |
+| ------------- | ------------- | ------------- |
+|BOT_GH_TOKEN | required | Need this token, to pull private repository |
+| LLM_MODEL | required | Name of model  |
+| LLM_PROVIDER | required | Name of llm provider  |
+| LLM_API_KEY | required | Your api key  |
+| LANGFUSE_SECRET_KEY | optional  | Optional lanfuse parameter  |
+| LANGFUSE_PUBLIC_KEY | optional | Optional lanfuse parameter  |
+| LANGFUSE_HOST | optional | Optional lanfuse parameter  |
+| LLM_API_BASE | required => azure provider  | Ignore, if not using azure |
+| LLM_API_VERSION | required => azure provider  | Ignore, if not using azure  |
+
+### Third step
+Add keys to repository secrets <br>
+Repo settings => secrets and variables / actions => New repository secret
+![image](https://github.com/user-attachments/assets/599f0742-5504-488c-9ebf-e47ffab39a70)
+
 
 ## Supported LLM
 | Provider  | Models |
@@ -12,7 +96,6 @@
 
 ## Custom instruction
 Create a file under `pr_agent_config/custom_instruction.txt`
-
 
 ## How to prepare repository summary
 1. **Checkout the files-to-prompt tool**</br>
