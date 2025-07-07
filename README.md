@@ -1,5 +1,14 @@
 # PR_AUTO
 
+## Supported LLM
+| Provider  | Models |
+| ------------- | ------------- |
+| openai  | [Table link](https://platform.openai.com/docs/models)  |
+| azure  | [Table link](https://learn.microsoft.com/en-us/azure/ai-foundry/openai/concepts/models?tabs=global-standard%2Cstandard-chat-completions)  |
+| google_genai  | [Table link](https://ai.google.dev/gemini-api/docs/models)  |
+| anthropic  | [Table link](https://docs.anthropic.com/en/docs/about-claude/models/overview)  |
+
+
 
 ## How to prepare repository summary
 1. **Checkout the files-to-prompt tool**</br>
