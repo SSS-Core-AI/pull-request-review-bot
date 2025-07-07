@@ -9,7 +9,7 @@
 | anthropic  | [Table link](https://docs.anthropic.com/en/docs/about-claude/models/overview)  |
 
 ## Custom instruction
-Create a file under `./github/pr_agent/custom_instruction.txt`
+Create a file under `pr_agent_config/custom_instruction.txt`
 
 
 ## How to prepare repository summary
@@ -45,4 +45,4 @@ files-to-prompt .\controllers\ .\models\ .\utils\ .\tests\ app.py main.py -e py 
    ```
 
 4. **Save the summary**</br>
-   Copy the model’s response into `./github/pr_agent/repo_summary.txt` in your project root.
+   Copy the model’s response into `pr_agent_config/repo_summary.txt` in your project root.
