@@ -10,7 +10,7 @@ from src.agent.file_crawler.file_crawler_tool import FileCrawlerTool
 from src.agent.pull_request.pr_agent_tool import get_custom_instruction
 from src.agent.pull_request.pr_bot_state import ChatbotAgentState
 from src.agent.pull_request.pr_draft_prompt import PR_DRAFT_SYSTEM_PROMPT, PR_DRAFT_HUMAN_PROMPT
-from src.agent.pull_request.pr_plan_prompt import PLAN_SYSTEM_PROMPT, PLAN_HUMAN_PROMPT
+from src.agent.pull_request.pr_plan_prompt import PLAN_SYSTEM_PROMPT, PLAN_HUMAN_PROMPT, CODE_REVIEW_RULE
 from src.model.pull_request_model import PullRequestIssueModel
 from src.utility.model_loader import ILLMLoader
 from src.utility.module_prompt_factory import ModulePromptFactory
@@ -104,6 +104,7 @@ class PRBotAgent:
                 'issue': issue,
                 'file_script': self._file_crawler.get_files_str([file_path]),
                 'dependency_script': self._file_crawler.get_files_str(dependency_paths),
+                'code_review_rule': CODE_REVIEW_RULE,
             },
             system_prompt_text=PLAN_SYSTEM_PROMPT,
             human_prompt_text=PLAN_HUMAN_PROMPT,
