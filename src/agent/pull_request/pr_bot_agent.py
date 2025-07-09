@@ -59,6 +59,7 @@ class PRBotAgent:
 
         r = await (simple_chain.with_config({"run_name": "PR Drafts"}).ainvoke({
             'pr_patch': state['pr_patch'],
+            'short_summary': state['short_summary'],
             'custom_instruction': get_custom_instruction(state['custom_instruction']),
             'committed_file_and_dependency': self._file_crawler.get_commit_files_dependencies_str(),
         }))

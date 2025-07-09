@@ -3,6 +3,7 @@ from src.model.pull_request_model import FileModel
 
 class ChatbotAgentState(TypedDict):
     pr_patch: str
+    short_summary: str
     plans: list[str]
     drafts: list
     custom_instruction: str

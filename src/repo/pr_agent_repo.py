@@ -15,13 +15,14 @@ class PRAgentRepo:
         self._langfuse_handler = get_langfuse_callback()
         self._llm_loader = ClassicILLMLoader(api_config)
 
-    async def run_pr_agent(self, file_crawler: FileCrawlerTool,  patch_content: str, c_instruction: str):
+    async def run_pr_agent(self, file_crawler: FileCrawlerTool, short_summary: str,  patch_content: str, c_instruction: str):
         agent = PRBotAgent(self._llm_loader, file_crawler)
         agent_graph = agent.create_graph()
 
         feedback_content = await agent_graph.ainvoke({
             'pr_patch': patch_content,
             'custom_instruction': c_instruction,
+            'short_summary': short_summary,
         },
         {'run_name': 'PR Issues Agent', "callbacks": self._langfuse_handler })
 

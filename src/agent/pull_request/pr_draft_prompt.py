@@ -8,6 +8,11 @@ Your job here is to point out the possible issue fit the criteria\
 """
 
 PR_DRAFT_HUMAN_PROMPT = """\
+[Summary of patch]
+'''
+{short_summary}
+'''
+
 [PR PATCH]
 '''
 {pr_patch}
