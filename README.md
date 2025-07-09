@@ -1,5 +1,11 @@
 # PR_AUTO
 
+## Table of content
+[Installation](#installation)  
+[Supported LLM](#supported-llm)  
+[Custom instruction](#custom-instruction)  
+[How to prepare repository summary](#how-to-prepare-repository-summary)  
+
 ## Installation
 ### First step
 Register tokens (classic) 
@@ -93,6 +99,8 @@ Repo settings => secrets and variables / actions => New repository secret
 | azure  | [Table link](https://learn.microsoft.com/en-us/azure/ai-foundry/openai/concepts/models?tabs=global-standard%2Cstandard-chat-completions)  |
 | google_genai  | [Table link](https://ai.google.dev/gemini-api/docs/models)  |
 | anthropic  | [Table link](https://docs.anthropic.com/en/docs/about-claude/models/overview)  |
+
+For Azure, manually align the deploy model name to what is in the documentation
 
 ## Custom instruction
 Create a file under `pr_agent_config/custom_instruction.txt`
