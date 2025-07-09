@@ -1,5 +1,9 @@
 # PR_AUTO
 
+## Table of content
+[Installation](#installation)  
+[How to prepare repository summary](#how-to-prepare-repository-summary)  
+
 ## Installation
 ### First step
 Register tokens (classic) 
