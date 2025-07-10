@@ -105,6 +105,30 @@ For Azure, manually align the deploy model name to what is in the documentation
 ## Custom instruction
 Create a file under `pr_agent_config/custom_instruction.txt`
 
+<details>
+<summary>Intstruction sample (Python as example)</summary>
+
+``` txt
+pr_agent_config/custom_instruction.txt
+
+## Python Style and Formatting
+
+PEP 8 compliance and specific style violations to look for
+Import organization and formatting (PEP 328)
+Naming conventions for variables, functions, classes, modules, and constants
+Comment and docstring formatting (PEP 257)
+
+
+## For each section, provide:
+
+Good examples showing the Pythonic way
+Bad examples showing common anti-patterns
+Checklist items for reviewers
+```
+</details>
+
+
+
 ## How to prepare repository summary
 1. **Checkout the files-to-prompt tool**</br>
 Install this package https://github.com/simonw/files-to-prompt
