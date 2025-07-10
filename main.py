@@ -55,7 +55,10 @@ async def main(github_event_json: dict):
     await send_github_comment(comment_url, summary)
 
     # Issue comment agent
-    feedback_contents = await pr_repo.run_pr_agent(patch_content=patch_content, c_instruction=c_instruction, file_crawler=file_crawler)
+    feedback_contents = await pr_repo.run_pr_agent(patch_content=patch_content,
+                                                   c_instruction=c_instruction,
+                                                   file_crawler=file_crawler,
+                                                   short_summary=summary)
 
     async with asyncio.TaskGroup() as tg:
         for feedback_content in feedback_contents:
