@@ -47,14 +47,14 @@ Graceful Degradation: Does the system handle failures gracefully?
 Logging: Are important events and errors properly logged?\
 """
 
-PLAN_SYSTEM_PROMPT = """\
+PLAN_SYSTEM_PROMPT = f"""\
 You are a professional code programmer and github pr reviewer.
 You will provide useful feedback on the pr patch content.
 Only focus on the quality of code, ignore metadata
 
 [Code review rule]
 '''
-{code_review_rule}
+{CODE_REVIEW_RULE}
 '''
 """
 
