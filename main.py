@@ -62,7 +62,6 @@ async def process_review(session_id: str, token: str, github_event_json: dict):
             )
 
 async def process_comment(session_id: str, token: str, github_event_json: dict):
-
     if  'pull_request' not in github_event_json['issue']:
         return
 
@@ -71,15 +70,10 @@ async def process_comment(session_id: str, token: str, github_event_json: dict):
 
     comment_contents = await fetch_github_content(comment_url, token)
     repo_contents = await fetch_github_content(repo_url, token)
-
-    print('comment_contents', comment_contents)
-    last_comment = comment_contents[-1]
-    print('last_comment', last_comment)
-
-    print('repo_contents', repo_contents)
+    last_comment = comment_contents[-1]['body']
 
     if last_comment == '/comment':
-        await process_review(session_id, token, github_event_json)
+        await process_review(session_id, token, repo_contents)
 
 async def main(github_event_json: dict):
     load_dotenv()
