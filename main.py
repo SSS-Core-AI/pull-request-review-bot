@@ -30,6 +30,13 @@ async def main(github_event_json: dict):
     self_repo_url = github_event_json['pull_request']['_links']['self']['href']
     file_repo_url = self_repo_url+'/files'
 
+    if event_name == 'pull_request':
+        print('event_name', 'pull_request')
+    elif event_name == 'issue_comment':
+        print('event_name', 'issue_comment')
+    else:
+        print('event_name: NONE')
+
     async with asyncio.TaskGroup() as tg:
         patch_content_task = tg.create_task(
             fetch_github_patch(pull_request_url=github_event_json['pull_request']['url'], token=token)
