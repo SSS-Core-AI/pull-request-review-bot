@@ -14,7 +14,7 @@ async def send_github_comment(comment_url: str, comment_content: str, token: str
         response = await client.post(comment_url, json=payload, headers=headers)
         return response
 
-async def retrieve_github_comments(comment_url: str, token: str):
+async def fetch_github_content(url: str, token: str):
 
     headers = {
         "Accept": "application/vnd.github+json",
@@ -23,7 +23,7 @@ async def retrieve_github_comments(comment_url: str, token: str):
     }
 
     async with httpx.AsyncClient() as client:
-        response = await client.get(comment_url, headers=headers)
+        response = await client.get(url, headers=headers)
         return response.json()
 
 

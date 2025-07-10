@@ -7,7 +7,7 @@ import uuid
 from dotenv import load_dotenv
 
 from src.agent.file_crawler.file_crawler_tool import FileCrawlerTool
-from src.github_tools.github_comment import send_github_comment, retrieve_github_comments
+from src.github_tools.github_comment import send_github_comment, fetch_github_content
 from src.repo.pr_agent_repo import PRAgentRepo
 from src.utility.fetch_utility import fetch_github_file, fetch_github_patch, fetch_github_files
 from src.utility.llm_state import LLMAPIConfig
@@ -62,9 +62,21 @@ async def process_review(session_id: str, token: str, github_event_json: dict):
             )
 
 async def process_comment(session_id: str, token: str, github_event_json: dict):
+
+    if  'pull_request' not in github_event_json['issue']:
+        return
+
     comment_url = github_event_json['issue']['comments_url']
-    comment_contents = await retrieve_github_comments(comment_url, token)
+    repo_url = github_event_json['issue']['pull_request']['url']
+
+    comment_contents = await fetch_github_content(comment_url, token)
+    repo_contents = await fetch_github_content(repo_url, token)
+
+    print('comment_contents', comment_contents)
     last_comment = comment_contents[-1]
+    print('last_comment', last_comment)
+
+    print('repo_contents', repo_contents)
 
     if last_comment == '/comment':
         await process_review(session_id, token, github_event_json)
