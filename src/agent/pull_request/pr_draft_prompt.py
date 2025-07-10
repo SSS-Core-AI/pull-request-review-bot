@@ -1,10 +1,17 @@
-PR_DRAFT_SYSTEM_PROMPT = """\
+from src.agent.pull_request.pr_plan_prompt import CODE_REVIEW_RULE
+
+PR_DRAFT_SYSTEM_PROMPT = f"""\
 You are a professional code programmer and github pr reviewer.
 You will provide useful feedback on the pr patch content.
 Only focus on the code itself, ignore metadata
 
 Given a pull request patch, the commited files name and its dependency files name
-Your job here is to point out the possible issue fit the criteria\
+Your job here is to point out the possible issue fit the criteria
+
+[Code review rule]
+'''
+{CODE_REVIEW_RULE}
+'''
 """
 
 PR_DRAFT_HUMAN_PROMPT = """\
@@ -35,7 +42,9 @@ Output the dependency file path in the format of json array as below
 [
     {{
         "pr_patch": "The section on [PR PATCH], that has issue",
+        "title": "The unique title for this issue",
         "issue": "a short explanation on what the issue is",
+        "priority": "how serious is the issue, categorize into 'high', 'medium' and 'low' only",
         "file_path": "the path of main file",
         "dependency_paths": [a list of dependency file paths, worth a look]
     }}

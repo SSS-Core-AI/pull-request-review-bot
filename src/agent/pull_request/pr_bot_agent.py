@@ -79,6 +79,8 @@ class PRBotAgent:
                         self._llm_pr_review_plan(
                             index=index,
                             patch=draft['pr_patch'],
+                            title=draft['title'],
+                            priority=draft['priority'],
                             instruction=get_custom_instruction(state['custom_instruction']),
                             issue=draft['issue'],
                             file_path=draft['file_path'],
@@ -91,7 +93,8 @@ class PRBotAgent:
 
         return {'plans': plans}
 
-    async def _llm_pr_review_plan(self, index: int, patch: str, instruction: str, issue: str, file_path: str,  dependency_paths: list[str]):
+    async def _llm_pr_review_plan(self, index: int, patch: str, title: str, priority: str,
+                                  instruction: str, issue: str, file_path: str,  dependency_paths: list[str]):
         llm = self._llm_loader.get_llm_model()
 
         simple_chain = ModulePromptFactory(
@@ -110,13 +113,11 @@ class PRBotAgent:
         ).create_chain()
 
         r = await (simple_chain.with_config({"run_name": f"PR Plan: {index}"}).ainvoke({}))
-        plan_dict: dict = parse_json(r)
-        pr_issue_model = PullRequestIssueModel(**plan_dict)
 
-        issue_text = f'''### Issue: {pr_issue_model.issue_title}
-{get_priority_markdown(pr_issue_model.priority)}
+        issue_text = f'''### Issue: {title}
+{get_priority_markdown(priority)}
 
-{pr_issue_model.content}'''
+{r}'''
 
         return issue_text
 

@@ -59,7 +59,7 @@ Only focus on the quality of code, ignore metadata
 """
 
 PLAN_HUMAN_PROMPT = """\
-[Code review rule] is a more general rule, and [Instruction] will include more specific rule for this project only.
+[Code review rule] is a more general rule, and [Instruction] will include more specific style/rule for this project.
 
 [PR PATCH]
 '''
@@ -89,11 +89,4 @@ The full script of target file and its dependency is given.
 Use them as supplement material, so you have enough information exploit possible cause of issue 
 
 Output
-```json
-{{
-    "issue_title": "the title of this issue",
-    "priority": "how serious is the issue, categorize into 'high', 'medium' and 'low' only",
-    "content": "Follow the [Instruction]"
-}}
-```
 """

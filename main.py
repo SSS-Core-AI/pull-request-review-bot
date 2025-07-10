@@ -43,7 +43,6 @@ async def process_review(session_id: str, token: str, sha: str, comment_url: str
     file_crawler = FileCrawlerTool(commit_file_array, content_url=content_url, sha=sha, token=token)
     summary = await pr_repo.run_summary_agent(patch_content=patch_content)
 
-
     await send_github_comment(comment_url, summary, token)
 
     # Issue comment agent
@@ -70,8 +69,11 @@ async def process_comment(session_id: str, token: str, github_event_json: dict):
     last_comment = comment_contents[-1]['body']
 
     if last_comment == '/comment':
-        await process_review(session_id=session_id, token=token, sha=repo_contents['head']['sha'], comment_url=repo_contents['comments_url'],
-                             content_url=repo_contents['head']['repo']['contents_url'], self_repo_url=repo_contents['_links']['self']['href'],
+        await process_review(session_id=session_id, token=token,
+                             sha=repo_contents['head']['sha'],
+                             comment_url=repo_contents['comments_url'],
+                             content_url=repo_contents['head']['repo']['contents_url'],
+                             self_repo_url=repo_contents['_links']['self']['href'],
                              pull_request_url=repo_contents['url'])
 
 async def main(github_event_json: dict):
@@ -80,7 +82,6 @@ async def main(github_event_json: dict):
     token = os.getenv('BOT_GH_TOKEN')
 
     event_name = os.getenv('EVENT_NAME')
-    print('event_name', event_name)
 
     if event_name == 'issue_comment':
         await process_comment(session_id, token, github_event_json)
