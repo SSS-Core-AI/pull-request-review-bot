@@ -24,5 +24,6 @@ async def retrieve_github_comments(comment_url: str, token: str):
 
     async with httpx.AsyncClient() as client:
         response = await client.get(comment_url, headers=headers)
-        return response
+        return response.json()
+
 

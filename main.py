@@ -63,7 +63,7 @@ async def process_review(session_id: str, token: str, github_event_json: dict):
 
 
 async def process_comment(session_id: str, token: str, github_event_json: dict):
-    comment_url = github_event_json['pull_request']['comments_url']
+    comment_url = github_event_json['issue']['comments_url']
     comment_content = await retrieve_github_comments(comment_url, token)
     print('comment_content', comment_content)
 
