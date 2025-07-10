@@ -70,4 +70,7 @@ async def main(github_event_name: str, github_event_json: dict):
 
 
 if __name__ == "__main__":
+    print('sys.argv[1]', sys.argv[1])
+    print('sys.argv[2]', sys.argv[2])
+
     asyncio.run(main( sys.argv[1], json.loads(sys.argv[2]) ))
