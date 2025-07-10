@@ -7,21 +7,14 @@ import uuid
 from dotenv import load_dotenv
 
 from src.agent.file_crawler.file_crawler_tool import FileCrawlerTool
-from src.github_tools.github_comment import send_github_comment
+from src.github_tools.github_comment import send_github_comment, retrieve_github_comments
 from src.repo.pr_agent_repo import PRAgentRepo
 from src.utility.fetch_utility import fetch_github_file, fetch_github_patch, fetch_github_files
 from src.utility.llm_state import LLMAPIConfig
 from src.utility.static_variable import CUSTOM_INSTRUCTION_FILE
 
-async def main(github_event_json: dict):
-
-    load_dotenv()
-    session_id = str(uuid.uuid4())
-
+async def process_review(session_id: str, token: str, github_event_json: dict):
     api_config = LLMAPIConfig.get_config()
-    token = os.getenv('BOT_GH_TOKEN')
-    event_name = os.getenv('EVENT_NAME')
-    print('event_name', event_name)
     pr_repo = PRAgentRepo(session_id, api_config)
 
     sha = github_event_json['pull_request']['head']['sha']
@@ -29,13 +22,6 @@ async def main(github_event_json: dict):
     content_url = github_event_json['repository']['contents_url']
     self_repo_url = github_event_json['pull_request']['_links']['self']['href']
     file_repo_url = self_repo_url+'/files'
-
-    if event_name == 'pull_request':
-        print('event_name', 'pull_request')
-    elif event_name == 'issue_comment':
-        print('event_name', 'issue_comment')
-    else:
-        print('event_name: NONE')
 
     async with asyncio.TaskGroup() as tg:
         patch_content_task = tg.create_task(
@@ -61,7 +47,7 @@ async def main(github_event_json: dict):
     summary = await pr_repo.run_summary_agent(patch_content=patch_content)
 
 
-    await send_github_comment(comment_url, summary)
+    await send_github_comment(comment_url, summary, token)
 
     # Issue comment agent
     feedback_contents = await pr_repo.run_pr_agent(patch_content=patch_content,
@@ -74,6 +60,25 @@ async def main(github_event_json: dict):
             tg.create_task(
                 send_github_comment(comment_url, feedback_content)
             )
+
+
+async def process_comment(session_id: str, token: str, github_event_json: dict):
+    comment_url = github_event_json['pull_request']['comments_url']
+    comment_content = await retrieve_github_comments(comment_url, token)
+    print('comment_content', comment_content)
+
+async def main(github_event_json: dict):
+    load_dotenv()
+    session_id = str(uuid.uuid4())
+    token = os.getenv('BOT_GH_TOKEN')
+
+    event_name = os.getenv('EVENT_NAME')
+    print('event_name', event_name)
+
+    if event_name == 'issue_comment':
+        await process_comment(session_id, token, github_event_json)
+    else:
+        await process_review(session_id, token, github_event_json)
 
 
 if __name__ == "__main__":
