@@ -58,7 +58,7 @@ async def process_review(session_id: str, token: str, github_event_json: dict):
     async with asyncio.TaskGroup() as tg:
         for feedback_content in feedback_contents:
             tg.create_task(
-                send_github_comment(comment_url, feedback_content)
+                send_github_comment(comment_url, feedback_content, token)
             )
 
 
