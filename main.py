@@ -13,19 +13,16 @@ from src.utility.fetch_utility import fetch_github_file, fetch_github_patch, fet
 from src.utility.llm_state import LLMAPIConfig
 from src.utility.static_variable import CUSTOM_INSTRUCTION_FILE
 
-async def process_review(session_id: str, token: str, github_event_json: dict):
+async def process_review(session_id: str, token: str, sha: str, comment_url: str,
+                         content_url: str, self_repo_url: str, pull_request_url: str):
     api_config = LLMAPIConfig.get_config()
     pr_repo = PRAgentRepo(session_id, api_config)
 
-    sha = github_event_json['pull_request']['head']['sha']
-    comment_url = github_event_json['pull_request']['comments_url']
-    content_url = github_event_json['repository']['contents_url']
-    self_repo_url = github_event_json['pull_request']['_links']['self']['href']
     file_repo_url = self_repo_url+'/files'
 
     async with asyncio.TaskGroup() as tg:
         patch_content_task = tg.create_task(
-            fetch_github_patch(pull_request_url=github_event_json['pull_request']['url'], token=token)
+            fetch_github_patch(pull_request_url=pull_request_url, token=token)
         )
 
         # Get the custom instruction
@@ -73,7 +70,9 @@ async def process_comment(session_id: str, token: str, github_event_json: dict):
     last_comment = comment_contents[-1]['body']
 
     if last_comment == '/comment':
-        await process_review(session_id, token, repo_contents)
+        await process_review(session_id=session_id, token=token, sha=repo_contents['head']['sha'], comment_url=repo_contents['comments_url'],
+                             content_url=repo_contents['head']['repo']['contents_url'], self_repo_url=repo_contents['_links']['self']['href'],
+                             pull_request_url=repo_contents['url'])
 
 async def main(github_event_json: dict):
     load_dotenv()
@@ -86,7 +85,13 @@ async def main(github_event_json: dict):
     if event_name == 'issue_comment':
         await process_comment(session_id, token, github_event_json)
     else:
-        await process_review(session_id, token, github_event_json)
+        sha = github_event_json['pull_request']['head']['sha']
+        comment_url = github_event_json['pull_request']['comments_url']
+        content_url = github_event_json['repository']['contents_url']
+        self_repo_url = github_event_json['pull_request']['_links']['self']['href']
+        pull_request_url = github_event_json['pull_request']['url']
+        await process_review(session_id=session_id, token=token, sha=sha, comment_url=comment_url,
+                             content_url=content_url, self_repo_url=self_repo_url, pull_request_url=pull_request_url)
 
 if __name__ == "__main__":
     asyncio.run(main( json.loads(sys.argv[1]) ))
