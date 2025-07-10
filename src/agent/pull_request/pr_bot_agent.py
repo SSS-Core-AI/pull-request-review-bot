@@ -107,6 +107,7 @@ class PRBotAgent:
                 'issue': issue,
                 'file_script': self._file_crawler.get_files_str([file_path]),
                 'dependency_script': self._file_crawler.get_files_str(dependency_paths),
+                'title': title,
             },
             system_prompt_text=PLAN_SYSTEM_PROMPT,
             human_prompt_text=PLAN_HUMAN_PROMPT,

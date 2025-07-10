@@ -50,16 +50,11 @@ Logging: Are important events and errors properly logged?\
 PLAN_SYSTEM_PROMPT = f"""\
 You are a professional code programmer and github pr reviewer.
 You will provide useful feedback on the pr patch content.
-Only focus on the quality of code, ignore metadata
-
-[Code review rule]
-'''
-{CODE_REVIEW_RULE}
-'''
+Only focus on the quality of code, ignore metadata\
 """
 
 PLAN_HUMAN_PROMPT = """\
-[Code review rule] is a more general rule, and [Instruction] will include more specific style/rule for this project.
+The title of this issue is '{title}'
 
 [PR PATCH]
 '''
@@ -82,6 +77,8 @@ PLAN_HUMAN_PROMPT = """\
 '''
 {dependency_script}
 '''
+
+[Code review rule] is a more general rule, and [Instruction] will include more specific style/rule for this project.
 
 Focus on [Issue],
 [PR PATCH] show you what has change that cause the [Issue].

@@ -43,7 +43,7 @@ Output the dependency file path in the format of json array as below
     {{
         "pr_patch": "The section on [PR PATCH], that has issue",
         "title": "The unique title for this issue",
-        "issue": "a short explanation on what the issue is",
+        "issue": "a explanation on what the issue is and what Code review rule it break",
         "priority": "how serious is the issue, categorize into 'high', 'medium' and 'low' only",
         "file_path": "the path of main file",
         "dependency_paths": [a list of dependency file paths, worth a look]
