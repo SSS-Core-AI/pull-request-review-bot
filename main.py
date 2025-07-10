@@ -61,11 +61,13 @@ async def process_review(session_id: str, token: str, github_event_json: dict):
                 send_github_comment(comment_url, feedback_content, token)
             )
 
-
 async def process_comment(session_id: str, token: str, github_event_json: dict):
     comment_url = github_event_json['issue']['comments_url']
-    comment_content = await retrieve_github_comments(comment_url, token)
-    print('comment_content', comment_content)
+    comment_contents = await retrieve_github_comments(comment_url, token)
+    last_comment = comment_contents[-1]
+
+    if last_comment == '/comment':
+        await process_review(session_id, token, github_event_json)
 
 async def main(github_event_json: dict):
     load_dotenv()
@@ -79,7 +81,6 @@ async def main(github_event_json: dict):
         await process_comment(session_id, token, github_event_json)
     else:
         await process_review(session_id, token, github_event_json)
-
 
 if __name__ == "__main__":
     asyncio.run(main( json.loads(sys.argv[1]) ))
