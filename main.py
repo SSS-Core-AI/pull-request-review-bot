@@ -13,7 +13,9 @@ from src.utility.fetch_utility import fetch_github_file, fetch_github_patch, fet
 from src.utility.llm_state import LLMAPIConfig
 from src.utility.static_variable import CUSTOM_INSTRUCTION_FILE
 
-async def main(github_event_json: dict):
+async def main(github_event_name: str, github_event_json: dict):
+    print('github_event_name', github_event_name)
+
     load_dotenv()
     session_id = str(uuid.uuid4())
 
@@ -68,4 +70,4 @@ async def main(github_event_json: dict):
 
 
 if __name__ == "__main__":
-    asyncio.run(main( json.loads(sys.argv[1]) ))
+    asyncio.run(main( sys.argv[1], json.loads(sys.argv[2]) ))
