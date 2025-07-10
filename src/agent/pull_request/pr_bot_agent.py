@@ -104,13 +104,14 @@ class PRBotAgent:
                 'issue': issue,
                 'file_script': self._file_crawler.get_files_str([file_path]),
                 'dependency_script': self._file_crawler.get_files_str(dependency_paths),
-                'code_review_rule': CODE_REVIEW_RULE,
             },
             system_prompt_text=PLAN_SYSTEM_PROMPT,
             human_prompt_text=PLAN_HUMAN_PROMPT,
         ).create_chain()
 
-        r = await (simple_chain.with_config({"run_name": f"PR Plan: {index}"}).ainvoke({}))
+        r = await (simple_chain.with_config({"run_name": f"PR Plan: {index}"}).ainvoke({
+            'code_review_rule': CODE_REVIEW_RULE
+        }))
         plan_dict: dict = parse_json(r)
         pr_issue_model = PullRequestIssueModel(**plan_dict)
 

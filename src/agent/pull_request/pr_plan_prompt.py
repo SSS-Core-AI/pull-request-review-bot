@@ -66,10 +66,7 @@ PLAN_HUMAN_PROMPT = """\
 {pr_patch}
 '''
 
-[Instruction]
-'''
 {custom_instruction}
-'''
 
 [Issue]
 '''
