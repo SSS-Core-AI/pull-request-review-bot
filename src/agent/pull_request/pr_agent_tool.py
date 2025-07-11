@@ -16,10 +16,8 @@ Strictly follow the instruction
 
 def get_comment_content(pull_request_model: PullRequestIssueModel) -> str:
     issue_text = f'''### Issue: {pull_request_model.title}
-    {get_priority_markdown(pull_request_model.priority)}
+{get_priority_markdown(pull_request_model.priority)}
 
-    {pull_request_model.content}'''
-
-    print('get_comment_content', issue_text)
+{pull_request_model.content}'''
 
     return issue_text
