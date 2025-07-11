@@ -5,14 +5,11 @@ async def send_github_comment(comment_url: str, comment_content: str, token: str
 
     payload: dict[str, str | int] = {"body": comment_content}
 
-    if sha is not None:
+    if line_number is not None and file_path is not None and sha is not None:
+        payload["line"] = line_number
+        payload["path"] = file_path
         payload["sha"] = sha
-
-    if file_path is not None:
-        payload["file_path"] = file_path
-
-    if line_number is not None:
-        payload["line_number"] = line_number
+        payload["side"] = 'RIGHT'
 
     headers = {
         "Accept": "application/vnd.github+json",
