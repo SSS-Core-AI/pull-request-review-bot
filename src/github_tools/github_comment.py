@@ -1,4 +1,26 @@
+import re
+
 import httpx
+
+
+def parse_link_header(link_header: str):
+    if not link_header:
+        return {}
+
+    links = {}
+    # Split by commas and parse each link
+    for link in link_header.split(','):
+        # Extract URL and rel type
+        url_match = re.search(r'<([^>]+)>', link)
+        rel_match = re.search(r'rel="([^"]+)"', link)
+
+        if url_match and rel_match:
+            url = url_match.group(1)
+            rel = rel_match.group(1)
+            links[rel] = url
+
+    return links
+
 
 async def send_github_comment(comment_url: str, comment_content: str, token: str,
                               sha: str = None, file_path: str = None, line_number: int = None):
