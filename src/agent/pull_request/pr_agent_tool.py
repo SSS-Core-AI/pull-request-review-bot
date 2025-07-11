@@ -20,4 +20,6 @@ def get_comment_content(pull_request_model: PullRequestIssueModel) -> str:
 
     {pull_request_model.content}'''
 
+    print('get_comment_content', issue_text)
+
     return issue_text
