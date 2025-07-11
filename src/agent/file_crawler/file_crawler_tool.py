@@ -7,9 +7,9 @@ class FileCrawlerTool:
     def __init__(self, commit_file_array: list[FileModel], content_url: str, sha: str, token: str):
         self.commit_file_array = commit_file_array
         self.file_table: dict[str, FileModel] = {}
-        self._content_url = content_url
-        self._sha = sha
-        self._token = token
+        self.content_url = content_url
+        self.sha = sha
+        self.token = token
 
         for commit_file in self.commit_file_array:
             self.file_table[commit_file.filename] = commit_file
@@ -42,7 +42,7 @@ class FileCrawlerTool:
 
     async def search_script_contents(self, commit_file_array: list[FileModel])-> Tuple[list[FileModel], str, str]:
         """Search the dependency for what is useful"""
-        commit_file_array, full_concat_script = await fetch_full_files(commit_file_array, self._content_url, self._sha, self._token)
+        commit_file_array, full_concat_script = await fetch_full_files(commit_file_array, self.content_url, self.sha, self.token)
         return commit_file_array, full_concat_script, find_import_scripts_str(commit_file_array)
 
     async def fetch_llm_files_content(self, llm_files: list[dict]):

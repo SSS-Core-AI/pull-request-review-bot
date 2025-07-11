@@ -14,10 +14,10 @@ Strictly follow the instruction
 """
 
 
-def get_comment_content(pull_request_model: PullRequestIssueModel) -> str:
-    issue_text = f'''### Issue: {pull_request_model.title}
-{get_priority_markdown(pull_request_model.priority)}
+def get_comment_content(title: str, priority: str, content: str) -> str:
+    issue_text = f'''### Issue: {title}
+{get_priority_markdown(priority)}
 
-{pull_request_model.content}'''
+{content}'''
 
     return issue_text

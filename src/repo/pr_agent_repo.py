@@ -15,8 +15,9 @@ class PRAgentRepo:
         self._langfuse_handler = get_langfuse_callback()
         self._llm_loader = ClassicILLMLoader(api_config)
 
-    async def run_pr_agent(self, file_crawler: FileCrawlerTool, short_summary: str,  patch_content: str, c_instruction: str):
-        agent = PRBotAgent(self._llm_loader, file_crawler)
+    async def run_pr_agent(self, file_crawler: FileCrawlerTool, pull_comment_url: str, short_summary: str,
+                           patch_content: str, c_instruction: str):
+        agent = PRBotAgent(self._llm_loader, file_crawler, pull_comment_url)
         agent_graph = agent.create_graph()
 
         feedback_content = await agent_graph.ainvoke({

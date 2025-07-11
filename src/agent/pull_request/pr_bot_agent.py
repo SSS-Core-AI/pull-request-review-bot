@@ -7,10 +7,11 @@ from langgraph.graph import StateGraph
 
 from src.agent.file_crawler.file_crawler_prompt import FILE_CRAWLER_SYSTEM_PROMPT, FILE_CRAWLER_HUMAN_PROMPT
 from src.agent.file_crawler.file_crawler_tool import FileCrawlerTool
-from src.agent.pull_request.pr_agent_tool import get_custom_instruction
+from src.agent.pull_request.pr_agent_tool import get_custom_instruction, get_comment_content
 from src.agent.pull_request.pr_bot_state import ChatbotAgentState
 from src.agent.pull_request.pr_draft_prompt import PR_DRAFT_SYSTEM_PROMPT, PR_DRAFT_HUMAN_PROMPT
 from src.agent.pull_request.pr_plan_prompt import PLAN_SYSTEM_PROMPT, PLAN_HUMAN_PROMPT, CODE_REVIEW_RULE
+from src.github_tools.github_comment import send_github_comment
 from src.model.pull_request_model import PullRequestIssueModel
 from src.utility.model_loader import ILLMLoader
 from src.utility.module_prompt_factory import ModulePromptFactory
@@ -18,9 +19,10 @@ from src.utility.utility_func import parse_json, get_priority_markdown
 
 
 class PRBotAgent:
-    def __init__(self, llm_loader: ILLMLoader, file_crawler: FileCrawlerTool):
+    def __init__(self, llm_loader: ILLMLoader, file_crawler: FileCrawlerTool, pull_comment_url: str):
         self._llm_loader = llm_loader
         self._file_crawler = file_crawler
+        self._pull_comment_url = pull_comment_url
 
     async def _file_preparation(self, state: ChatbotAgentState):
         """ Get all the file dependencies path """
@@ -81,6 +83,7 @@ class PRBotAgent:
                             patch=draft['pr_patch'],
                             title=draft['title'],
                             priority=draft['priority'],
+                            line_number=draft['line_number'],
                             instruction=get_custom_instruction(state['custom_instruction']),
                             issue=draft['issue'],
                             file_path=draft['file_path'],
@@ -97,7 +100,7 @@ class PRBotAgent:
 
         return {'plans': plans}
 
-    async def _llm_pr_review_plan(self, index: int, patch: str, title: str, priority: str,
+    async def _llm_pr_review_plan(self, index: int, patch: str, title: str, priority: str, line_number,
                                   instruction: str, issue: str, file_path: str,  dependency_paths: list[str]):
         llm = self._llm_loader.get_llm_model()
 
@@ -118,6 +121,12 @@ class PRBotAgent:
         ).create_chain()
 
         r = await (simple_chain.with_config({"run_name": f"PR Plan: {index}"}).ainvoke({}))
+
+        # Send Github comment once ready
+        await send_github_comment(self._pull_comment_url,
+                            get_comment_content(title, priority, r),
+                            self._file_crawler.token, sha=self._file_crawler.sha, file_path=file_path,
+                            line_number=line_number)
 
         return r
 

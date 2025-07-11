@@ -15,8 +15,11 @@ from src.utility.fetch_utility import fetch_github_file, fetch_github_patch, fet
 from src.utility.llm_state import LLMAPIConfig
 from src.utility.static_variable import CUSTOM_INSTRUCTION_FILE
 
+
+
 async def process_review(session_id: str, token: str, sha: str, comment_url: str,
                          content_url: str, self_repo_url: str, pull_request_url: str):
+    pull_comment_url = comment_url.replace('/issues/', '/pulls/')
     api_config = LLMAPIConfig.get_config()
     pr_repo = PRAgentRepo(session_id, api_config)
 
@@ -49,18 +52,11 @@ async def process_review(session_id: str, token: str, sha: str, comment_url: str
 
     # Issue comment agent
     feedback_contents: list[PullRequestIssueModel] = await pr_repo.run_pr_agent(patch_content=patch_content,
+                                                   pull_comment_url=pull_comment_url,
                                                    c_instruction=c_instruction,
                                                    file_crawler=file_crawler,
-                                                   short_summary=summary)
+                                                   short_summary=summary, )
 
-    async with asyncio.TaskGroup() as tg:
-        for feedback_content in feedback_contents:
-            pull_comment_url = comment_url.replace('/issues/', '/pulls/')
-
-            tg.create_task(
-                send_github_comment(pull_comment_url, get_comment_content(feedback_content), token,
-                                    sha=sha, file_path=feedback_content.file_path, line_number=feedback_content.line_number)
-            )
 
 async def process_comment(session_id: str, token: str, github_event_json: dict):
     if  'pull_request' not in github_event_json['issue']:
