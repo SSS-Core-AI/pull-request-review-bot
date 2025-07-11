@@ -7,7 +7,9 @@ import uuid
 from dotenv import load_dotenv
 
 from src.agent.file_crawler.file_crawler_tool import FileCrawlerTool
+from src.agent.pull_request.pr_agent_tool import get_comment_content
 from src.github_tools.github_comment import send_github_comment, fetch_github_content
+from src.model.pull_request_model import PullRequestIssueModel
 from src.repo.pr_agent_repo import PRAgentRepo
 from src.utility.fetch_utility import fetch_github_file, fetch_github_patch, fetch_github_files
 from src.utility.llm_state import LLMAPIConfig
@@ -46,7 +48,7 @@ async def process_review(session_id: str, token: str, sha: str, comment_url: str
     await send_github_comment(comment_url, summary, token)
 
     # Issue comment agent
-    feedback_contents = await pr_repo.run_pr_agent(patch_content=patch_content,
+    feedback_contents: list[PullRequestIssueModel] = await pr_repo.run_pr_agent(patch_content=patch_content,
                                                    c_instruction=c_instruction,
                                                    file_crawler=file_crawler,
                                                    short_summary=summary)
@@ -54,7 +56,8 @@ async def process_review(session_id: str, token: str, sha: str, comment_url: str
     async with asyncio.TaskGroup() as tg:
         for feedback_content in feedback_contents:
             tg.create_task(
-                send_github_comment(comment_url, feedback_content, token)
+                send_github_comment(comment_url, get_comment_content(feedback_content), token,
+                                    sha=sha, file_path=feedback_content.file_path, line_number=feedback_content.line_number)
             )
 
 async def process_comment(session_id: str, token: str, github_event_json: dict):

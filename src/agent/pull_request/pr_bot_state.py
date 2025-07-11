@@ -1,10 +1,11 @@
 from typing import TypedDict
-from src.model.pull_request_model import FileModel
+from src.model.pull_request_model import FileModel, PullRequestIssueModel
+
 
 class ChatbotAgentState(TypedDict):
     pr_patch: str
     short_summary: str
-    plans: list[str]
+    plans: list[PullRequestIssueModel]
     drafts: list
     custom_instruction: str
 

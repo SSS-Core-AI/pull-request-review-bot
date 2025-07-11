@@ -89,7 +89,11 @@ class PRBotAgent:
                     )
                 )
 
-        plans = [task.result() for task in tasks]
+        plans: list[PullRequestIssueModel] = []
+
+        for t_index, task in enumerate(tasks):
+            t_content = task.result()
+            plans.append(PullRequestIssueModel(**draft_list[t_index], content=t_content))
 
         return {'plans': plans}
 

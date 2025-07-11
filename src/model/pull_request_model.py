@@ -18,6 +18,11 @@ class FileModel(BaseModel):
 
 
 class PullRequestIssueModel(BaseModel):
-    issue_title: str = Field(default='', description='The title of the issue')
-    priority: str = Field(default='low', description='how serious is the issue, categorize into high, middle and low')
-    content: str = Field(default='', description='Follow the [Instruction]')
+    pr_patch: str = Field(default='', description='The section on [PR PATCH], that has issue')
+    title: str = Field(default='', description='The unique title for this issue')
+    issue: str = Field(default='', description='a explanation on what the issue is and what Code review rule it break')
+    priority: str = Field(default='', description="how serious is the issue, categorize into 'high', 'medium' and 'low' only")
+    file_path: str = Field(default='', description='the path of main file')
+    dependency_paths: list[str] = Field(default='', description='a list of dependency file paths, worth a look')
+    line_number: int = Field(default='', description='The title of the issue')
+    content: Optional[str] = Field(default='', description='Follow the [Instruction]')
