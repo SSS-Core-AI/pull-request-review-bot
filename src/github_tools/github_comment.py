@@ -11,6 +11,8 @@ async def send_github_comment(comment_url: str, comment_content: str, token: str
         payload["sha"] = sha
         payload["side"] = 'RIGHT'
 
+    print('send_github_comment payload', payload)
+
     headers = {
         "Accept": "application/vnd.github+json",
         "Authorization": f"Bearer {token}",
@@ -19,6 +21,8 @@ async def send_github_comment(comment_url: str, comment_content: str, token: str
 
     async with httpx.AsyncClient() as client:
         response = await client.post(comment_url, json=payload, headers=headers)
+
+        print('send_github_comment response', response)
         return response
 
 async def fetch_github_content(url: str, token: str):
