@@ -47,7 +47,7 @@ Output the dependency file path in the format of json array as below
         "priority": "how serious is the issue, categorize into 'high', 'medium' and 'low' only",
         "file_path": "the path of main file",
         "dependency_paths": [a list of dependency file paths, worth a look],
-        "line_number": int type point to the issue on main file
+        "line_number": int type indicate to issue line number on pr_patch
     }}
 ]
 ```\
