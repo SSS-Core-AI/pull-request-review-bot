@@ -55,8 +55,10 @@ async def process_review(session_id: str, token: str, sha: str, comment_url: str
 
     async with asyncio.TaskGroup() as tg:
         for feedback_content in feedback_contents:
+            pull_comment_url = comment_url.replace('/issues/', '/pulls/')
+
             tg.create_task(
-                send_github_comment(comment_url, get_comment_content(feedback_content), token,
+                send_github_comment(pull_comment_url, get_comment_content(feedback_content), token,
                                     sha=sha, file_path=feedback_content.file_path, line_number=feedback_content.line_number)
             )
 
