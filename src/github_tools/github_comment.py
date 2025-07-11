@@ -33,6 +33,8 @@ async def fetch_github_content(url: str, token: str):
 
     async with httpx.AsyncClient() as client:
         response = await client.get(url, headers=headers)
-        return response.json()
-
-
+        return {
+            'data': response.json(),
+            'link_header': response.headers.get('link'),
+            'headers': response.headers
+        }
