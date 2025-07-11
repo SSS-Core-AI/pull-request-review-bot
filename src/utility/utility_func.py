@@ -1,6 +1,7 @@
 import re
 from typing import Literal
-
+import time
+from contextlib import contextmanager
 import json_repair
 
 
@@ -42,3 +43,10 @@ def get_priority_markdown(priority: Literal['high', 'medium', 'low']):
             return '![Medium Priority](https://img.shields.io/badge/Priority-Medium-orange)'
         case _:
             return '![Low Priority](https://img.shields.io/badge/Priority-Low-green)'
+
+@contextmanager
+def timer(name: str = "Function"):
+    start_time = time.perf_counter()
+    yield
+    end_time = time.perf_counter()
+    print(f"{name} took {end_time - start_time:.4f} seconds")
