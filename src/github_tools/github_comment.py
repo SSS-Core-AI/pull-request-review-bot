@@ -8,7 +8,7 @@ async def send_github_comment(comment_url: str, comment_content: str, token: str
     if line_number is not None and file_path is not None and sha is not None:
         payload["line"] = line_number
         payload["path"] = file_path
-        payload["sha"] = sha
+        payload["commit_id"] = sha
         payload["side"] = 'RIGHT'
 
     headers = {

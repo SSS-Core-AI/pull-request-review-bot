@@ -67,7 +67,7 @@ async def process_comment(session_id: str, token: str, github_event_json: dict):
     comment_url = github_event_json['issue']['comments_url']
     repo_url = github_event_json['issue']['pull_request']['url']
 
-    page_comment_contents = await fetch_github_content(comment_url+"/per_page=10", token)
+    page_comment_contents = await fetch_github_content(comment_url+"?per_page=10", token)
     print('page_comment_contents', page_comment_contents)
 
     comment_contents = await fetch_github_content(comment_url, token)
