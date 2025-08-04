@@ -24,5 +24,5 @@ class PullRequestIssueModel(BaseModel):
     priority: str = Field(default='', description="how serious is the issue, categorize into 'high', 'medium' and 'low' only")
     file_path: str = Field(default='', description='the path of main file')
     dependency_paths: list[str] = Field(default='', description='a list of dependency file paths, worth a look')
-    line_number: int = Field(default='', description='The title of the issue')
+    line_number: int = Field(default='', description='The start line where the issue begin')
     content: Optional[str] = Field(default='', description='Follow the [Instruction]')
