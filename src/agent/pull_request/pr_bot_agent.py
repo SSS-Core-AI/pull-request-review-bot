@@ -79,6 +79,12 @@ class PRBotAgent:
         async with asyncio.TaskGroup() as tg:
             for index, draft in enumerate(draft_list):
                 line_number = draft.get('line_number', -1)
+                priority = draft.get('priority', 'low')
+
+                # If LLM thinks this issue is nonsense
+                if priority == 'none':
+                    continue
+
                 tasks.append(
                     tg.create_task(
                         self._llm_pr_review_plan(
