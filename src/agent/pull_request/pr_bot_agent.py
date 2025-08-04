@@ -19,10 +19,12 @@ from src.utility.utility_func import parse_json, get_priority_markdown
 
 
 class PRBotAgent:
-    def __init__(self, llm_loader: ILLMLoader, file_crawler: FileCrawlerTool, pull_comment_url: str):
+    def __init__(self, llm_loader: ILLMLoader, file_crawler: FileCrawlerTool, general_comment_url: str,
+                 line_specific_comment_url: str):
         self._llm_loader = llm_loader
         self._file_crawler = file_crawler
-        self._pull_comment_url = pull_comment_url
+        self._general_comment_url = general_comment_url
+        self._line_specific_comment_url = line_specific_comment_url
 
     async def _file_preparation(self, state: ChatbotAgentState):
         """ Get all the file dependencies path """
@@ -101,7 +103,7 @@ class PRBotAgent:
                 plans.append(t_content)
             except Exception as e:
                 print('_llm_pr_review_plans enumerate tasks error', e)
-                
+
         return {'plans': plans}
 
     async def _llm_pr_review_plan(self, index: int, patch: str, title: str, priority: str, line_number,
@@ -129,7 +131,7 @@ class PRBotAgent:
         r = await (simple_chain.with_config({"run_name": f"PR Plan: {index}"}).ainvoke({}))
 
         # Send Github comment once ready
-        await send_github_comment(self._pull_comment_url,
+        await send_github_comment(self._general_comment_url if filter_line_number is None else self._line_specific_comment_url,
                             get_comment_content(title, priority, r),
                             self._file_crawler.token, sha=self._file_crawler.sha, file_path=file_path,
                             line_number=filter_line_number)
