@@ -19,7 +19,6 @@ from src.utility.utility_func import timer
 
 async def process_review(session_id: str, token: str, sha: str, comment_url: str,
                          content_url: str, self_repo_url: str, pull_request_url: str):
-    pull_comment_url = comment_url.replace('/issues/', '/pulls/')
     api_config = LLMAPIConfig.get_config()
     pr_repo = PRAgentRepo(session_id, api_config)
 
@@ -54,7 +53,7 @@ async def process_review(session_id: str, token: str, sha: str, comment_url: str
     # Issue comment agent
     with timer('Issue planning'):
         feedback_contents: list[PullRequestIssueModel] = await pr_repo.run_pr_agent(patch_content=patch_content,
-                                                       pull_comment_url=pull_comment_url,
+                                                       comment_url=comment_url,
                                                        c_instruction=c_instruction,
                                                        file_crawler=file_crawler,
                                                        short_summary=summary, )
