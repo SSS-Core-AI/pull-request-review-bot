@@ -38,6 +38,7 @@ PR_DRAFT_HUMAN_PROMPT = """\
 Focus on the potential issue from [PR PATCH], and used [File and its dependency] as supplement materials
 
 If the file is delete, set the line_number to -1
+priority 'none' means this issue is not important, we shouldn't tackle on it
 
 Output the dependency file path in the format of json array as below
 ```json
@@ -46,7 +47,7 @@ Output the dependency file path in the format of json array as below
         "pr_patch": "The section on [PR PATCH], that has issue",
         "title": "The unique title for this issue",
         "issue": "a explanation on what the issue is and what Code review rule it break",
-        "priority": "how serious is the issue, categorize into 'high', 'medium' and 'low' only",
+        "priority": "how serious is the issue, categorize into 'high', 'medium', 'low' and 'none' only",
         "file_path": "the path of main file",
         "dependency_paths": [a list of dependency file paths, worth a look],
         "line_number": int type indicate to issue line number on pr_patch
