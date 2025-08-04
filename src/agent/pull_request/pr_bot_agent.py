@@ -76,6 +76,7 @@ class PRBotAgent:
         tasks: list[Task] = []
         async with asyncio.TaskGroup() as tg:
             for index, draft in enumerate(draft_list):
+                line_number = draft.get('line_number', -1)
                 tasks.append(
                     tg.create_task(
                         self._llm_pr_review_plan(
@@ -83,7 +84,7 @@ class PRBotAgent:
                             patch=draft['pr_patch'],
                             title=draft['title'],
                             priority=draft.get('priority', 'low'),
-                            line_number=draft.get('line_number', None),
+                            line_number=line_number, # Must larger than 0
                             instruction=get_custom_instruction(state['custom_instruction']),
                             issue=draft['issue'],
                             file_path=draft['file_path'],
@@ -96,22 +97,18 @@ class PRBotAgent:
 
         for t_index, task in enumerate(tasks):
             t_content = task.result()
-            plans.append(PullRequestIssueModel(
-                pr_patch=draft['pr_patch'],
-                title=draft['title'],
-                issue=draft['issue'],
-                priority=draft.get('priority', 'low'),
-                file_path=draft['file_path'],
-                dependency_paths=draft.get('dependency_paths', []),
-                line_number=draft.get('line_number', 0),
-                content=t_content)
-            )
-
+            try:
+                plans.append(t_content)
+            except Exception as e:
+                print('_llm_pr_review_plans enumerate tasks error', e)
+                
         return {'plans': plans}
 
     async def _llm_pr_review_plan(self, index: int, patch: str, title: str, priority: str, line_number,
-                                  instruction: str, issue: str, file_path: str,  dependency_paths: list[str]):
+                                  instruction: str, issue: str, file_path: str,  dependency_paths: list[str]) -> PullRequestIssueModel:
         llm = self._llm_loader.get_llm_model()
+
+        filter_line_number = None if line_number < 0 else line_number
 
         simple_chain = ModulePromptFactory(
             StrOutputParser(),
@@ -135,9 +132,18 @@ class PRBotAgent:
         await send_github_comment(self._pull_comment_url,
                             get_comment_content(title, priority, r),
                             self._file_crawler.token, sha=self._file_crawler.sha, file_path=file_path,
-                            line_number=line_number)
+                            line_number=filter_line_number)
 
-        return r
+        return PullRequestIssueModel(
+            pr_patch=patch,
+            title=title,
+            issue=issue,
+            priority=priority,
+            file_path=file_path,
+            dependency_paths=dependency_paths,
+            line_number=line_number,
+            content=r
+        )
 
     def create_graph(self):
         g_workflow = StateGraph(ChatbotAgentState)
