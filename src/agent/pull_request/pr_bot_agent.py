@@ -96,7 +96,16 @@ class PRBotAgent:
 
         for t_index, task in enumerate(tasks):
             t_content = task.result()
-            plans.append(PullRequestIssueModel(**draft_list[t_index], content=t_content))
+            plans.append(PullRequestIssueModel(
+                pr_patch=draft['pr_patch'],
+                title=draft['title'],
+                issue=draft['issue'],
+                priority=draft.get('priority', 'low'),
+                file_path=draft['file_path'],
+                dependency_paths=draft.get('dependency_paths', []),
+                line_number=draft.get('line_number', 0),
+                content=t_content)
+            )
 
         return {'plans': plans}
 
