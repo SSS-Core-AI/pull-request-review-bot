@@ -37,6 +37,8 @@ PR_DRAFT_HUMAN_PROMPT = """\
 
 Focus on the potential issue from [PR PATCH], and used [File and its dependency] as supplement materials
 
+If the file is delete, set the line_number to -1
+
 Output the dependency file path in the format of json array as below
 ```json
 [
