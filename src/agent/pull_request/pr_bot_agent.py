@@ -82,12 +82,12 @@ class PRBotAgent:
                             index=index,
                             patch=draft['pr_patch'],
                             title=draft['title'],
-                            priority=draft['priority'],
-                            line_number=draft['line_number'],
+                            priority=draft.get('priority', 'low'),
+                            line_number=draft.get('line_number', None),
                             instruction=get_custom_instruction(state['custom_instruction']),
                             issue=draft['issue'],
                             file_path=draft['file_path'],
-                            dependency_paths=draft['dependency_paths'],
+                            dependency_paths=draft.get('dependency_paths', []),
                         )
                     )
                 )
