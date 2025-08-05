@@ -21,7 +21,6 @@ def parse_link_header(link_header: str):
 
     return links
 
-
 async def send_github_comment(comment_url: str, comment_content: str, token: str,
                               sha: str = None, file_path: str = None, line_number: int = None):
 
@@ -39,13 +38,10 @@ async def send_github_comment(comment_url: str, comment_content: str, token: str
         "X-GitHub-Api-Version": "2022-11-28"
     }
 
-    print('payload', payload)
-
     async with httpx.AsyncClient() as client:
         response = await client.post(comment_url, json=payload, headers=headers)
         response_json = response.json()
-        print('send_github_comment', response_json)
-        if 'errors' in response_json:
+        if 'body' not in response_json:
             return await send_github_comment(comment_url, comment_content, token)
 
         return response
