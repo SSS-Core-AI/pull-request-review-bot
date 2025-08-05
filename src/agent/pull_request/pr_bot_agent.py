@@ -85,6 +85,11 @@ class PRBotAgent:
                 if priority == 'none':
                     continue
 
+                # If LLM forget to provide one of the variable
+                if 'pr_patch' not in draft or 'title' not in draft or 'priority' not in draft or \
+                    'issue' not in draft or 'file_path' not in draft or 'dependency_paths' not in draft:
+                    continue
+
                 tasks.append(
                     tg.create_task(
                         self._llm_pr_review_plan(
@@ -105,10 +110,7 @@ class PRBotAgent:
 
         for t_index, task in enumerate(tasks):
             t_content = task.result()
-            try:
-                plans.append(t_content)
-            except Exception as e:
-                print('_llm_pr_review_plans enumerate tasks error', e)
+            plans.append(t_content)
 
         return {'plans': plans}
 
