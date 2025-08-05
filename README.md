@@ -8,10 +8,6 @@
 
 ## Installation
 ### First step
-Register tokens (classic) 
-![image](https://github.com/user-attachments/assets/4d59a741-4b5b-4418-a510-d8457af79459)
-
-### Second step
 Copy and paste the yaml file to `./github/workflows/pr_review_bot.yaml`
 <details>
 <summary>Yaml file in detail</summary>
@@ -22,8 +18,11 @@ on:
   pull_request:
     types:
       - opened
-      - synchronize # Comment out, if you don't want agent to run on every pr update
       - reopened
+  issue_comment:
+    types:
+      - created
+
 jobs:
   auto-bot-review:
     runs-on: ubuntu-latest
@@ -38,34 +37,46 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: SSS-Core-AI/pull-request-review-bot
-          token: ${{ secrets.BOT_GH_TOKEN }} # Your token (classic) here
           path: pull-request-review-bot
+          ref: 1.x/v1_main
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.12.9
+          python-version: '3.12'
+
+      - name: Install uv with caching
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: |
+            pull-request-review-bot/pyproject.toml
+            pull-request-review-bot/uv.lock
+
+      - name: Debug Environment
+        working-directory: pull-request-review-bot
+        run: |
+          echo "=== GitHub Context ==="
+          echo "Event name: '${{ github.event_name }}'"
+          echo "Event action: '${{ github.event.action }}'"
 
       - name: Create .env file with multiple variables
         working-directory: pull-request-review-bot
         run: |
           cat << EOF > .env
-          LLM_MODEL=gpt-4.1
-          LLM_PROVIDER=openai
+          LLM_MODEL=gemini-2.5-flash-lite
+          LLM_PROVIDER=google_genai
           LLM_API_KEY=${{secrets.LLM_API_KEY}}
           LANGFUSE_SECRET_KEY=${{secrets.LANGFUSE_SECRET_KEY}}
           LANGFUSE_PUBLIC_KEY=${{secrets.LANGFUSE_PUBLIC_KEY}}
           LANGFUSE_HOST=${{secrets.LANGFUSE_HOST}}
           BOT_GH_TOKEN=${{secrets.GITHUB_TOKEN}}
-          $([ -n "${{secrets.LLM_API_BASE}}" ] && echo "LLM_API_BASE=${{secrets.LLM_API_BASE}}")
-          $([ -n "${{secrets.LLM_API_VERSION}}" ] && echo "LLM_API_VERSION=${{secrets.LLM_API_VERSION}}")
+          EVENT_NAME=${{github.event_name}}
           EOF
 
-      - name: Install uv and packages
+      - name: Install packages
         working-directory: pull-request-review-bot
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          uv sync
+        run: uv sync
 
       - name: Execute
         working-directory: pull-request-review-bot
@@ -76,7 +87,6 @@ jobs:
 
 | Key | Existence | Description |
 | ------------- | ------------- | ------------- |
-|BOT_GH_TOKEN | required | Need this token, to pull private repository |
 | LLM_MODEL | required | Name of model  |
 | LLM_PROVIDER | required | Name of llm provider  |
 | LLM_API_KEY | required | Your api key  |
