@@ -37,9 +37,9 @@ jobs:
       - name: Checkout private repository
         uses: actions/checkout@v4
         with:
-          repository: SSS-Core-AI/poc-pull-request-bot
+          repository: SSS-Core-AI/pull-request-review-bot
           token: ${{ secrets.BOT_GH_TOKEN }} # Your token (classic) here
-          path: poc-pull-request-bot
+          path: pull-request-review-bot
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -47,7 +47,7 @@ jobs:
           python-version: 3.12.9
 
       - name: Create .env file with multiple variables
-        working-directory: poc-pull-request-bot
+        working-directory: pull-request-review-bot
         run: |
           cat << EOF > .env
           LLM_MODEL=gpt-4.1
@@ -62,13 +62,13 @@ jobs:
           EOF
 
       - name: Install uv and packages
-        working-directory: poc-pull-request-bot
+        working-directory: pull-request-review-bot
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
           uv sync
 
       - name: Execute
-        working-directory: poc-pull-request-bot
+        working-directory: pull-request-review-bot
         run: |
           uv run python -m main '${{ toJSON(github.event) }}'
 ```
