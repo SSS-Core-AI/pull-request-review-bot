@@ -96,7 +96,7 @@ jobs:
 | LLM_API_BASE | required => azure provider  | Ignore, if not using azure |
 | LLM_API_VERSION | required => azure provider  | Ignore, if not using azure  |
 
-### Third step
+### Secondary step
 Add keys to repository secrets <br>
 Repo settings => secrets and variables / actions => New repository secret
 ![image](https://github.com/user-attachments/assets/599f0742-5504-488c-9ebf-e47ffab39a70)
