@@ -70,6 +70,11 @@ async def process_comment(session_id: str, token: str, github_event_json: dict):
         page_comment_contents = await fetch_github_content(comment_url+"?per_page=1", token)
         page_link_headers = parse_link_header(page_comment_contents['link_header'])
         last_comment_url = page_link_headers.get('last')
+        print('page_comment_contents', page_comment_contents)
+
+        print('page_link_headers', page_link_headers)
+
+        print('last_comment_url', last_comment_url)
         last_comment = (await fetch_github_content(last_comment_url, token))['data'][-1]['body']
 
         repo_contents = (await fetch_github_content(repo_url, token))['data']
