@@ -43,4 +43,7 @@ class PRAgentRepo:
 
         r = await (simple_chain.with_config({"run_name": "PR Summary Agent", "callbacks": self._langfuse_handler}).ainvoke({'pr_patch': patch_content}))
 
+        r = f'''### Summary
+{r}\
+'''
         return r
