@@ -78,7 +78,7 @@ class PRBotAgent:
         tasks: list[Task] = []
         async with asyncio.TaskGroup() as tg:
             for index, draft in enumerate(draft_list):
-                line_number = draft.get('line_number', -1)
+                line_number = -1 # Disable the line_number for now, llm can't distinguish the correct line_number
                 priority = draft.get('priority', 'low')
 
                 # If LLM thinks this issue is nonsense
