@@ -90,6 +90,7 @@ class PRBotAgent:
                     continue
 
                 pr_patch_index = clamp(draft['pr_patch_index'], 0, len(self.pr_patch_sections))
+                print('pr_patch_index', pr_patch_index)
                 if pr_patch_index < 0 or pr_patch_index >= len(self.pr_patch_sections):
                     continue
 
