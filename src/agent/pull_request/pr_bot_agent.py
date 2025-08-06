@@ -79,15 +79,11 @@ class PRBotAgent:
         async with asyncio.TaskGroup() as tg:
             for index, draft in enumerate(draft_list):
                 line_number = -1 # Disable the line_number for now, llm can't distinguish the correct line_number
-                priority = draft.get('priority', 'low')
-
-                # If LLM thinks this issue is nonsense
-                if priority == 'none':
-                    continue
 
                 # If LLM forget to provide one of the variable
                 if 'pr_patch' not in draft or 'title' not in draft or 'priority' not in draft or \
                     'issue' not in draft or 'file_path' not in draft or 'dependency_paths' not in draft:
+                    print('property not exist:', draft)
                     continue
 
                 tasks.append(
