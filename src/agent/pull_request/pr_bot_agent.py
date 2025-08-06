@@ -7,7 +7,8 @@ from langgraph.graph import StateGraph
 
 from src.agent.file_crawler.file_crawler_prompt import FILE_CRAWLER_SYSTEM_PROMPT, FILE_CRAWLER_HUMAN_PROMPT
 from src.agent.file_crawler.file_crawler_tool import FileCrawlerTool
-from src.agent.pull_request.pr_agent_tool import get_custom_instruction, get_comment_content
+from src.agent.pull_request.pr_agent_tool import get_custom_instruction, get_comment_content, split_git_patches, \
+    git_patches_to_text
 from src.agent.pull_request.pr_bot_state import ChatbotAgentState
 from src.agent.pull_request.pr_draft_prompt import PR_DRAFT_SYSTEM_PROMPT, PR_DRAFT_HUMAN_PROMPT
 from src.agent.pull_request.pr_plan_prompt import PLAN_SYSTEM_PROMPT, PLAN_HUMAN_PROMPT, CODE_REVIEW_RULE
@@ -15,7 +16,7 @@ from src.github_tools.github_comment import send_github_comment
 from src.model.pull_request_model import PullRequestIssueModel
 from src.utility.model_loader import ILLMLoader
 from src.utility.module_prompt_factory import ModulePromptFactory
-from src.utility.utility_func import parse_json, get_priority_markdown
+from src.utility.utility_func import parse_json, get_priority_markdown, clamp
 
 
 class PRBotAgent:
@@ -25,11 +26,14 @@ class PRBotAgent:
         self._file_crawler = file_crawler
         self._general_comment_url = general_comment_url
         self._line_specific_comment_url = line_specific_comment_url
+        self.pr_patch_sections = []
+
 
     async def _file_preparation(self, state: ChatbotAgentState):
         """ Get all the file dependencies path """
         commit_file_array, commit_file_concat_str, file_dependencies_str = await self._file_crawler.search_script_contents(self._file_crawler.commit_file_array)
         self._file_crawler.commit_file_array = commit_file_array
+        self.pr_patch_sections = split_git_patches(state['pr_patch'])
 
         return {'file_commit_concat_text': commit_file_concat_str,'file_dependency_paths_text': file_dependencies_str}
 
@@ -62,13 +66,11 @@ class PRBotAgent:
         ).create_chain()
 
         r = await (simple_chain.with_config({"run_name": "PR Drafts"}).ainvoke({
-            'pr_patch': state['pr_patch'],
+            'pr_patch': git_patches_to_text(self.pr_patch_sections),
             'short_summary': state['short_summary'],
             'custom_instruction': get_custom_instruction(state['custom_instruction']),
             'committed_file_and_dependency': self._file_crawler.get_commit_files_dependencies_str(),
         }))
-
-        print('state[pr_patch]', state['pr_patch'])
 
         drafts_list: list[dict] = parse_json(r)
 
@@ -83,16 +85,20 @@ class PRBotAgent:
                 line_number = -1 # Disable the line_number for now, llm can't distinguish the correct line_number
 
                 # If LLM forget to provide one of the variable
-                if 'pr_patch' not in draft or 'title' not in draft or 'priority' not in draft or \
+                if 'pr_patch_index' not in draft or 'title' not in draft or 'priority' not in draft or \
                     'issue' not in draft or 'file_path' not in draft or 'dependency_paths' not in draft:
-                    print('property not exist:', draft)
                     continue
 
+                pr_patch_index = clamp(draft['pr_patch_index'], 0, len(self.pr_patch_sections))
+                if pr_patch_index < 0 or pr_patch_index >= len(self.pr_patch_sections):
+                    continue
+
+                patch_content = self.pr_patch_sections[pr_patch_index]
                 tasks.append(
                     tg.create_task(
                         self._llm_pr_review_plan(
                             index=index,
-                            patch=draft['pr_patch'],
+                            patch=patch_content,
                             title=draft['title'],
                             priority=draft.get('priority', 'low'),
                             line_number=line_number, # Must larger than 0
