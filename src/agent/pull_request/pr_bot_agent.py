@@ -67,10 +67,10 @@ class PRBotAgent:
             'custom_instruction': get_custom_instruction(state['custom_instruction']),
             'committed_file_and_dependency': self._file_crawler.get_commit_files_dependencies_str(),
         }))
+        
+        print('drafts_list_raw', r)
 
         drafts_list: list[dict] = parse_json(r)
-
-        print('drafts_list', drafts_list)
 
         return {'drafts': drafts_list}
 
