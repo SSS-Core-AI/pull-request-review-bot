@@ -70,6 +70,8 @@ class PRBotAgent:
 
         drafts_list: list[dict] = parse_json(r)
 
+        print('drafts_list', drafts_list)
+
         return {'drafts': drafts_list}
 
     async def _llm_pr_review_plans(self, state: ChatbotAgentState):
