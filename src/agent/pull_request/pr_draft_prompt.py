@@ -41,9 +41,9 @@ Output the dependency file path in the format of json array as below
 ```json
 [
     {{
-        "pr_patch": "The section on [PR PATCH], that has issue",
         "title": "The unique title for this issue",
         "issue": "a explanation on what the issue is and what Code review rule it break",
+        "pr_patch_index": int type the index of pull request diff on beginning of each section,
         "priority": "how serious is the issue, categorize into 'high', 'medium', 'low' and only",
         "file_path": "the path of main file",
         "dependency_paths": ["a list of dependency file paths, worth a look"]

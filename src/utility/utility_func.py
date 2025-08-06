@@ -4,6 +4,8 @@ import time
 from contextlib import contextmanager
 import json_repair
 
+def clamp(value: int | float, min_value: int | float, max_value: int | float) -> int | float:
+    return max(min_value, min(value, max_value))
 
 def parse_block(code: str, raw_message: str) -> str:
     try:
