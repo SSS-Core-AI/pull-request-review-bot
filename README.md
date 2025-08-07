@@ -72,6 +72,8 @@ jobs:
           LANGFUSE_HOST=${{secrets.LANGFUSE_HOST}}
           BOT_GH_TOKEN=${{secrets.GITHUB_TOKEN}}
           EVENT_NAME=${{github.event_name}}
+          $([ -n "${{secrets.LLM_API_BASE}}" ] && echo "LLM_API_BASE=${{secrets.LLM_API_BASE}}")
+          $([ -n "${{secrets.LLM_API_VERSION}}" ] && echo "LLM_API_VERSION=${{secrets.LLM_API_VERSION}}")
           EOF
 
       - name: Install packages
