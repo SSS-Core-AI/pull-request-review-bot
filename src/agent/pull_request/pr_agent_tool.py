@@ -44,6 +44,8 @@ def git_patches_to_text(patch_contents: list[str]):
 
     for index, patch in enumerate(patch_contents):
         text += f'''Section index {index}:
-{patch}\n\n'''
+====== Start of PR section index {index} ======
+{patch}
+====== End of PR section index {index} ======\n\n'''
 
     return text
