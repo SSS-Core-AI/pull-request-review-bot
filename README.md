@@ -82,8 +82,10 @@ jobs:
 
       - name: Execute
         working-directory: pull-request-review-bot
+        env:
+          GITHUB_EVENT_JSON: ${{ toJSON(github.event) }}
         run: |
-          uv run python -m main '${{ toJSON(github.event) }}'
+          uv run python -m main "$GITHUB_EVENT_JSON"
 ```
 </details>
 
