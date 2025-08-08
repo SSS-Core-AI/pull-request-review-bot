@@ -8,7 +8,7 @@
 
 ## Installation
 ### First step
-Copy and paste the yaml file to `./github/workflows/pr_review_bot.yaml`
+Copy and paste the yaml file to `.github/workflows/pr_review_bot.yaml`
 <details>
 <summary>Yaml file in detail</summary>
 
