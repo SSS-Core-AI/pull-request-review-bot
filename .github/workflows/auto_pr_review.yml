@@ -3,61 +3,71 @@ on:
   pull_request:
     types:
       - opened
-      - synchronize
       - reopened
+  issue_comment:
+    types:
+      - created
+
 jobs:
   auto-bot-review:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
-      - name: Checkout code
+      - name: Checkout PR repository
         uses: actions/checkout@v4
+
+      - name: Checkout private repository
+        uses: actions/checkout@v4
+        with:
+          repository: SSS-Core-AI/pull-request-review-bot
+          path: pull-request-review-bot
+          ref: 1.x/v1_main
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.12.9
+          python-version: '3.12'
 
-      - name: Install gh CLI
-        run: |
-          sudo apt-get update
-          sudo apt-get install gh
+      - name: Install uv with caching
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: |
+            pull-request-review-bot/pyproject.toml
+            pull-request-review-bot/uv.lock
 
-      - name: Authenticate gh CLI
+      - name: Debug Environment
+        working-directory: pull-request-review-bot
         run: |
-          echo "${{ secrets.BOT_GH_PAT }}" | gh auth login --with-token
-
-      - name: Clone a private repository
-        run: |
-          git clone https://x-access-token:${{ secrets.BOT_GH_TOKEN }}@github.com/SSS-Core-AI/poc-pull-request-bot.git
-          cd poc-pull-request-bot
+          echo "=== GitHub Context ==="
+          echo "Event name: '${{ github.event_name }}'"
+          echo "Event action: '${{ github.event.action }}'"
 
       - name: Create .env file with multiple variables
+        working-directory: pull-request-review-bot
         run: |
-          echo "OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}}" > .env
-          echo "LANGFUSE_SECRET_KEY=${{secrets.LANGFUSE_SECRET_KEY}}" >> .env
-          echo "LANGFUSE_PUBLIC_KEY=${{secrets.LANGFUSE_PUBLIC_KEY}}" >> .env
-          echo "LANGFUSE_HOST=${{secrets.LANGFUSE_HOST}}" >> .env
-          echo "BOT_GH_PAT=${{secrets.BOT_GH_PAT}}" >> .env
-          echo "BOT_GH_TOKEN=${{secrets.BOT_GH_TOKEN}}" >> .env
-          echo "SHA=${{github.event.pull_request.head.sha}}" >> .env
+          cat << EOF > .env
+          LLM_MODEL=gemini-2.5-flash-lite
+          LLM_PROVIDER=google_genai
+          LLM_API_KEY=${{secrets.LLM_API_KEY}}
+          LANGFUSE_SECRET_KEY=${{secrets.LANGFUSE_SECRET_KEY}}
+          LANGFUSE_PUBLIC_KEY=${{secrets.LANGFUSE_PUBLIC_KEY}}
+          LANGFUSE_HOST=${{secrets.LANGFUSE_HOST}}
+          BOT_GH_TOKEN=${{secrets.GITHUB_TOKEN}}
+          EVENT_NAME=${{github.event_name}}
+          $([ -n "${{secrets.LLM_API_BASE}}" ] && echo "LLM_API_BASE=${{secrets.LLM_API_BASE}}")
+          $([ -n "${{secrets.LLM_API_VERSION}}" ] && echo "LLM_API_VERSION=${{secrets.LLM_API_VERSION}}")
+          EOF
 
-      - name: Install requirements.txt
-        run: pip install -r requirements.txt
-
-      - name: Download PR Patch
-        run: |
-            curl -L \
-            -H "Authorization: Bearer ${{secrets.BOT_GH_TOKEN}}" \
-            -H "Accept: application/vnd.github.patch" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            "${{ github.event.pull_request.url }}" -o pr.patch
-
-
-      - name: Debug
-        run: |
-          echo '${{ toJSON(github.event) }}' | jq .
-          cat pr.patch
+      - name: Install packages
+        working-directory: pull-request-review-bot
+        run: uv sync
 
       - name: Execute
+        working-directory: pull-request-review-bot
+        env:
+          GITHUB_EVENT_JSON: ${{ toJSON(github.event) }}
         run: |
-          python main.py pr.patch '${{ github.event.pull_request.comments_url}}' '${{ github.event.repository.contents_url}}'
+          uv run python -m main "$GITHUB_EVENT_JSON"
