@@ -9,17 +9,21 @@ regex_find_imports_cache = re.compile(REGEX_FIND_IMPORT_SCRIPT, re.MULTILINE)
 
 async def fetch_full_files(commit_file_array: list[FileModel], content_url: str, sha: str, token: str):
     tasks = []
+
+    unique_files = list({file.filename: file for file in commit_file_array}.values())
+    print(f'unique_files length: {len(unique_files)}')
+
     async with asyncio.TaskGroup() as tg:
         tasks = [
             tg.create_task(fetch_github_file(content_url, file.filename, sha, token))
-            for file in commit_file_array
+            for file in unique_files
         ]
 
     results = [task.result() for task in tasks]
     file_result = []
 
     files_concat_full_str = ''
-    for file_model, raw_file in zip(commit_file_array, results):
+    for file_model, raw_file in zip(unique_files, results):
         if raw_file == '':
             continue
 
@@ -34,8 +38,9 @@ async def fetch_full_files(commit_file_array: list[FileModel], content_url: str,
 
 def find_import_scripts_str(commit_file_array: list[FileModel]):
     all_dependencies_array = []
+    unique_files = list({file.filename: file for file in commit_file_array}.values())
 
-    for commit_file in commit_file_array:
+    for commit_file in unique_files:
 
         all_groups = regex_find_imports_cache.findall(commit_file.raw_content)
 
