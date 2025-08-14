@@ -7,7 +7,8 @@ import uuid
 from dotenv import load_dotenv
 
 from src.agent.file_crawler.file_crawler_tool import FileCrawlerTool
-from src.agent.pull_request.pr_agent_tool import get_comment_content
+from src.agent.pull_request.pr_agent_tool import get_comment_content, split_git_patches, git_patches_to_text
+from src.agent.pull_request.white_list_static import USEFUL_CODE_EXTS
 from src.github_tools.github_comment import send_github_comment, fetch_github_content, parse_link_header
 from src.model.pull_request_model import PullRequestIssueModel
 from src.repo.pr_agent_repo import PRAgentRepo
@@ -44,9 +45,12 @@ async def process_review(session_id: str, token: str, sha: str, comment_url: str
     c_instruction = c_instruction_task.result()
     commit_file_array = commit_files_task.result()
 
+    filter_pr_patch_sections = split_git_patches(patch_content, USEFUL_CODE_EXTS)
+    filter_pr_patch_text = git_patches_to_text(filter_pr_patch_sections)
+
     file_crawler = FileCrawlerTool(commit_file_array, content_url=content_url, sha=sha, token=token)
     with timer('PR summary'):
-        summary = await pr_repo.run_summary_agent(patch_content=patch_content)
+        summary = await pr_repo.run_summary_agent(patch_content=filter_pr_patch_text)
 
     await send_github_comment(comment_url, summary, token)
 
@@ -70,11 +74,6 @@ async def process_comment(session_id: str, token: str, github_event_json: dict):
         page_comment_contents = await fetch_github_content(comment_url+"?per_page=1", token)
         page_link_headers = parse_link_header(page_comment_contents['link_header'])
         last_comment_url = page_link_headers.get('last')
-        print('page_comment_contents', page_comment_contents)
-
-        print('page_link_headers', page_link_headers)
-
-        print('last_comment_url', last_comment_url)
         last_comment = (await fetch_github_content(last_comment_url, token))['data'][-1]['body']
 
         repo_contents = (await fetch_github_content(repo_url, token))['data']

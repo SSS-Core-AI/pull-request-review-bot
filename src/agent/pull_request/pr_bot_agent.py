@@ -12,6 +12,7 @@ from src.agent.pull_request.pr_agent_tool import get_custom_instruction, get_com
 from src.agent.pull_request.pr_bot_state import ChatbotAgentState
 from src.agent.pull_request.pr_draft_prompt import PR_DRAFT_SYSTEM_PROMPT, PR_DRAFT_HUMAN_PROMPT
 from src.agent.pull_request.pr_plan_prompt import PLAN_SYSTEM_PROMPT, PLAN_HUMAN_PROMPT, CODE_REVIEW_RULE
+from src.agent.pull_request.white_list_static import USEFUL_CODE_EXTS
 from src.github_tools.github_comment import send_github_comment
 from src.model.pull_request_model import PullRequestIssueModel
 from src.utility.model_loader import ILLMLoader
@@ -33,7 +34,7 @@ class PRBotAgent:
         """ Get all the file dependencies path """
         commit_file_array, commit_file_concat_str, file_dependencies_str = await self._file_crawler.search_script_contents(self._file_crawler.commit_file_array)
         self._file_crawler.commit_file_array = commit_file_array
-        self.pr_patch_sections = split_git_patches(state['pr_patch'])
+        self.pr_patch_sections = split_git_patches(state['pr_patch'], USEFUL_CODE_EXTS)
 
         return {'file_commit_concat_text': commit_file_concat_str,'file_dependency_paths_text': file_dependencies_str}
 
